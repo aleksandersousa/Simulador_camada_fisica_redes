@@ -1,3 +1,3 @@
-#Simulador_camada_fisica_redes
+# Simulador_camada_fisica_redes
 
-Simulador de camada física - redes
+Simulador de camada física feito em Java (Swing)
