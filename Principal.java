@@ -1,11 +1,12 @@
-/* ****************************************************************
+/* ***************************************************************
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 28/01/2020*
+Ultima alteracao: 29/01/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
+import view.TelaPrincipal;
 import javax.swing.SwingUtilities;
 
 public class Principal {
