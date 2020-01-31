@@ -16,7 +16,8 @@ public class MeioDeComunicacao {
 
   /* *****************************************************************************
   Metodo: meioDeComunicacao*
-  Funcao: Enviar os bits recebidos da camada fisica transmissora para a camada fisica receptora*
+  Funcao: Enviar os bits recebidos da camada fisica transmissora para a camada
+          fisica receptora*
   Parametros: int[] fluxoBrutoDeBits: vetor com os os bits*
   Retorno: void*
   ***************************************************************************** */
@@ -24,15 +25,26 @@ public class MeioDeComunicacao {
     int[] fluxoBrutoDeBitsPontoA = fluxoBrutoDeBits;
     int[] fluxoBrutoDeBitsPontoB = new int[fluxoBrutoDeBitsPontoA.length];
 
-    for(int i=0; i<fluxoBrutoDeBitsPontoA.length; i++){
-      fluxoBrutoDeBitsPontoB[i] = fluxoBrutoDeBitsPontoA[i];
-    }
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        for(int i=0; i<fluxoBrutoDeBitsPontoA.length; i++){
+          fluxoBrutoDeBitsPontoB[i] = fluxoBrutoDeBitsPontoA[i];
+          Canvas.fluxoDeBits.add(fluxoBrutoDeBitsPontoB[i]);
+        }
 
-    //Pintando painel com os bits
-    Canvas.fluxoDeBits = fluxoBrutoDeBitsPontoB;
-    Canvas.flag = true;
-    TelaPrincipal.repintarPainel();
+        Canvas.iniciarListaDeImagens();
+        Canvas.flag = true;
+        TelaPrincipal.repintarPainel();
 
-    CamadaFisicaReceptora.camadaFisicaReceptora(fluxoBrutoDeBitsPontoB);
+        try {
+          Canvas.trava.acquire();
+        } catch (Exception e) {
+          System.out.println("Erro no acquire");
+        }
+
+        CamadaFisicaReceptora.camadaFisicaReceptora(fluxoBrutoDeBitsPontoB);
+      }
+    }).start();
   }
 }

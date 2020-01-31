@@ -21,29 +21,24 @@ public class Conversao {
 
     //pegando tamanho do array de quadros
     for(int i=0; i<fluxoBrutoDeBits.length; i++){
-      if(i % 8 == 0){
+      if(i%8 == 7){
         tamanho++;
       }
     }
 
-    //convertendo para string
-    StringBuilder[] strQuadro = new StringBuilder[tamanho];
-    int j=0;
-    strQuadro[j] = new StringBuilder();
-    for(int i=0; i<fluxoBrutoDeBits.length; i++){
-      if(i % 8 == 0 && i != 0){
-        strQuadro[++j] = new StringBuilder();
-        strQuadro[j].append(fluxoBrutoDeBits[i]);
-      }
-      else{
-        strQuadro[j].append(fluxoBrutoDeBits[i]);
-      }
-    }
-
-    //convertendo os bits para inteiros da tabela ascii
     int[] quadro = new int[tamanho];
-    for(int i=0; i<quadro.length; i++){
-      quadro[i] = Integer.parseInt(strQuadro[i].toString(), 2);
+    int[] temp = Conversao.reverter(fluxoBrutoDeBits); //reverte o array
+    int decimal = 0;
+    for(int i=0, j=0, k=0; i<fluxoBrutoDeBits.length; i++){ //transforma em decimal
+      decimal += temp[i]*Math.pow(2, j);
+      j++;
+
+      if(i%8 == 7){
+        quadro[k] = decimal;
+        decimal = 0;
+        j = 0;
+        k++;
+      }
     }
 
     return quadro;
@@ -56,23 +51,14 @@ public class Conversao {
   Retorno: int[] bitsBrutos: vetor com os bits*
   *************************************************************** */
   public static int[] asciiParaBits(int[] quadro) {
-    StringBuilder strBitsBrutos = new StringBuilder();
+    int[] bitsBrutos = new int[quadro.length*8];
 
-    for(int i=0; i<quadro.length; i++){
-      int val = quadro[i];
-
-      for(int j=0; j<8; j++){
-        strBitsBrutos.append((val & 128) == 0 ? 0 : 1);
-        val <<= 1;
-      }
+    for(int i=0, j=0; i<quadro.length; i++){
+      Conversao.converter(quadro[i], bitsBrutos, j);
+      j+=8;
     }
 
-    int[] bitsBrutos = new int[strBitsBrutos.length()];
-    for(int i=0; i<bitsBrutos.length; i++){
-      bitsBrutos[i] = Character.getNumericValue(strBitsBrutos.charAt(i));
-    }
-
-    return bitsBrutos;
+    return Conversao.reverter(bitsBrutos);
   }
 
   /* ***************************************************************
@@ -113,5 +99,24 @@ public class Conversao {
     }
 
     return strBits.toString();
+  }
+
+  private static void converter(int numero, int[] bitsBrutos, int index) {
+    if(numero > 0){
+      bitsBrutos[index] = numero%2;
+      index++;
+
+      converter(numero >> 1, bitsBrutos, index);
+    }
+  }
+
+  private static int[] reverter(int[] bits) {
+    int[] temp = new int[bits.length];
+    for(int i=bits.length-1, j=0; i>=0; i--){
+      temp[j] = bits[i];
+      j++;
+    }
+
+    return temp;
   }
 }
