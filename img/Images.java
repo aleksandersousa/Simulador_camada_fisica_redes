@@ -27,7 +27,7 @@ public class Images {
     try{
       this.linhas = new ArrayList<Image>();
 
-      for(int i=0; i<=7; i++){
+      for(int i=0; i<=3; i++){
         InputStream input = Images.class.getResourceAsStream("linha"+i+".png");
         Image imagem = ImageIO.read(input);
         linhas.add(imagem);
