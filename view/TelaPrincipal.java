@@ -72,6 +72,7 @@ public class TelaPrincipal extends JFrame {
     this.add(txtLabelTabelaAsciiDecodificada);
     this.add(txtLabelBitsCodificados);
     this.add(txtLabelBitsRecebidos);
+    this.add(canvas);
   }
 
   /* **************************************************************
@@ -202,7 +203,6 @@ public class TelaPrincipal extends JFrame {
     this.formatarLabelDeTexto(this.txtLabelTabelaAsciiDecodificada, fonte, 500, 88, 135, 18);
     this.formatarLabelDeTexto(this.txtLabelMensagemDecodificada, fonte, 500, 20, 135, 18);
 
-    this.criarBarraDeRolagem(TelaPrincipal.canvas, 10, 300, 905,  100);
     this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(0), 130, 150, 280, 40); //bits brutos
     this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(1), 635, 150, 280, 40); //bits decodificados
     this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(2), 130, 60, 280, 80); //tabela ascii
@@ -220,7 +220,7 @@ public class TelaPrincipal extends JFrame {
   Metodo: imprimirNaTela*
   Funcao: Imprimir as informacoes na tela*
   Parametros: String strMensagem: texto a ser impresso
-                      int tipoDeImpressao: em qual caixa de texto sera impresso*
+              int tipoDeImpressao: em qual caixa de texto sera impresso*
   Retorno: void*
   *************************************************************** */
   public static void imprimirNaTela(String strMensagem, int tipoDeImpressao) {
@@ -262,16 +262,15 @@ public class TelaPrincipal extends JFrame {
     }
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: repintarPainel*
-  Funcao: Repintar o painel canvas*
+  Funcao: inicializa o thread que repinta o painel canvas*
   Parametros: nulo*
   Retorno: void*
   *************************************************************** */
   public static void repintarPainel() {
     try {
-      TelaPrincipal.canvas.repaint();
-      TelaPrincipal.canvas.update(canvas.getGraphics());
+      TelaPrincipal.canvas.repintar();
 
       Thread.sleep(TelaPrincipal.VELOCIDADE);
     } catch (Exception e) {

@@ -11,41 +11,50 @@ package view;
 import img.Images;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.concurrent.Semaphore;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Canvas extends JPanel {
-  private final int Y = 10;
+  private final int Y = 18;
   private final int LARGURA = 60;
   private final int ALTURA = 60;
-  private final int ESPACAMENTO = 58;
+  private final int ESPACAMENTO = 57;
 
-  public static int[] fluxoDeBits;
   public static boolean flag;
+  private static int x;
+  private long velocidade = 1000;
 
-  private int x;
-
-  private ArrayList<Image> linhas;
+  private static ArrayList<Image> linhas;
+  public static ArrayList<Integer> fluxoDeBits;
+  private static LinkedList<Image> tempLinhas;
+  public static Semaphore trava;
+  private static Thread atualizar;
   private Images imagens;
 
   /* **************************************************************
   Metodo: Canvas*
-  Funcao: Construtor da classe Canvas.*
+  Funcao: Construtor da classe Canvas*
   Parametros: nulo*
   Retorno: void*
   *************************************************************** */
   public Canvas() {
     this.initGUIComponents();
-
     this.imagens = new Images();
-    this.linhas = imagens.getLinhas();
+
+    Canvas.linhas = imagens.getLinhas();
+    Canvas.fluxoDeBits = new ArrayList<>();
+    Canvas.tempLinhas = new LinkedList<>();
+    Canvas.trava = new Semaphore(0); //semaforo para travar as camadas decodificadoras
+                                    // ate a animacao ser concluida
   }
 
   /* **************************************************************
@@ -55,7 +64,7 @@ public class Canvas extends JPanel {
   Retorno: void*
   *************************************************************** */
   private void initGUIComponents() {
-    this.setLayout(null);
+    this.setBounds(10, 300, 905,  100);
     this.setBorder(BorderFactory.createLineBorder(Color.RED));
     this.setBackground(Color.gray);
   }
@@ -78,6 +87,69 @@ public class Canvas extends JPanel {
   }
 
   /* **************************************************************
+  Metodo: iniciarListaDeImagens*
+  Funcao: inicia uma lista linkada que representa as ondas do fluxo
+          de bits*
+  Parametros: nulo*
+  Retorno: void*
+  *************************************************************** */
+  public static void iniciarListaDeImagens() {
+    for(int i=0; i<fluxoDeBits.size()-1; i++){
+      if(fluxoDeBits.get(i) == 0){
+        if(fluxoDeBits.get(i+1) == 1){
+          tempLinhas.add(linhas.get(0)); //linha bit0
+        }
+        else{
+          tempLinhas.add(linhas.get(1)); //linha bit0_2
+        }
+      }else{
+        if(fluxoDeBits.get(i+1) == 0){
+          tempLinhas.add(linhas.get(2)); //linha bit1
+        }else{
+          tempLinhas.add(linhas.get(3)); //linha bit1_2
+        }
+      }
+    }
+
+    if(fluxoDeBits.get(fluxoDeBits.size()-1) == 0){
+      tempLinhas.add(linhas.get(0)); //linha bit0
+    }else{
+      tempLinhas.add(linhas.get(2)); //linha bit1
+    }
+
+    tempLinhas.add(null); //imagem nula para identificar final do array
+    fluxoDeBits.clear(); //apos criar a lista com as imagens, reseta o array de bits
+  }
+
+  /* **************************************************************
+  Metodo: repintar*
+  Funcao: inicia um thread que fica repintando o painel. Quando o
+          thread eh interrompido, reseta os elementos para nova
+          animacao*
+  Parametros: nulo*
+  Retorno: void*
+  *************************************************************** */
+  public void repintar() {
+    atualizar = new Thread(new Runnable(){
+      @Override
+      public void run() {
+        try {
+          while(true){
+            repaint();
+            Thread.sleep(velocidade);
+          }
+        } catch (InterruptedException e) {
+          Canvas.flag = false;
+          Canvas.tempLinhas.clear();
+          Canvas.trava.release();
+          Canvas.x = 0;
+        }
+      }
+    });
+    atualizar.start();
+  }
+
+  /* **************************************************************
   Metodo: paintComponent*
   Funcao: desenhar as ondas que representam os bits pintando as
           respectivas imagens na tela.*
@@ -87,62 +159,24 @@ public class Canvas extends JPanel {
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-
     this.criarLinhaTracejada(g);
 
     if(flag){
-      if(fluxoDeBits[0] == 0){
-        g.drawImage(linhas.get(0), x, Y, LARGURA, ALTURA, null); //linha inicial bit0
-        x += 30;
-      }
-      else{
-        g.drawImage(linhas.get(1), x, Y, LARGURA, ALTURA, null); //linha inicial bit1
-        x += 30;
-      }
-
-      for(int i=0; i<fluxoDeBits.length-1; i++){
-        if(fluxoDeBits[i] == 0){
-          if(fluxoDeBits[i+1] == 1){
-            g.drawImage(linhas.get(2), x, Y, LARGURA, ALTURA, null); //linha bit0
-            x += ESPACAMENTO;
-          }
-          else{
-            g.drawImage(linhas.get(3), x, Y, LARGURA, ALTURA, null); //linha bit0_2
-            x += ESPACAMENTO;
-          }
-        }else{
-          if(fluxoDeBits[i+1] == 0){
-            g.drawImage(linhas.get(4), x, Y, LARGURA, ALTURA, null); //linha bit1
-            x += ESPACAMENTO;
-          }else{
-            g.drawImage(linhas.get(5), x, Y, LARGURA, ALTURA, null); //linha bit1_2
-            x += ESPACAMENTO;
-          }
+      int i=0;
+      for(; i<9; i++){ //desenha 8 imagens, representando 8 bits
+        if(tempLinhas.get(i) == null){ //acabaram as imagens
+          break;
         }
+        g.drawImage(tempLinhas.get(i), x, Y, LARGURA, ALTURA, null);
+        x += ESPACAMENTO;
       }
 
-      if(fluxoDeBits[fluxoDeBits.length-1] == 0){
-        g.drawImage(linhas.get(2), x, Y, LARGURA, ALTURA, null); //linha bit0
-        x += ESPACAMENTO/2;
-        g.drawImage(linhas.get(6), x, Y, LARGURA, ALTURA, null); //linha final bit0
-      }else{
-        g.drawImage(linhas.get(4), x, Y, LARGURA, ALTURA, null); //linha bit1
-        x += ESPACAMENTO/2;
-        g.drawImage(linhas.get(7), x, Y, LARGURA, ALTURA, null); //linha final bit1
+      if(i+1 < tempLinhas.size()){ //verifica se tem mais 8 bits para representar
+        tempLinhas.removeFirst();
+        x = 0;
+      }else{ //termina a animacao
+        atualizar.interrupt();
       }
-
-      x = 0;
     }
-  }
-
-  /* **************************************************************
-  Metodo: getPreferredSize*
-  Funcao: setar tamanho do painel.*
-  Parametros: nulo*
-  Retorno: void*
-  *************************************************************** */
-  @Override
-  public Dimension getPreferredSize() {
-    return new Dimension(40895, 0);
   }
 }
