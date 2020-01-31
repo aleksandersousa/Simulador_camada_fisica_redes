@@ -29,7 +29,7 @@ public class Canvas extends JPanel {
   private final int ALTURA = 60;
   private final int ESPACAMENTO = 57;
 
-  public static boolean flag;
+  public static boolean flag; //flag que indica se o painel pode ser repintado
   private static int x;
   private long velocidade = 1000;
 
