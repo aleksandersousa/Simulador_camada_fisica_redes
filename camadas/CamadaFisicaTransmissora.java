@@ -135,9 +135,9 @@ public class CamadaFisicaTransmissora {
    /* **************************************************************
   Metodo: mostrarCodigoAscii*
   Funcao: Transformar os elementos do vetor quadro em bits e colocar os bits em
-                uma string para imprimir na tela*
+          uma string para imprimir na tela*
   Parametros: int[] quadro: vetor com os numeros em ASCII
-                      int tipoDeImpressao: em qual caixa de texto sera impresso*
+              int tipoDeImpressao: em qual caixa de texto sera impresso*
   Retorno: void*
   *************************************************************** */
   public static void mostrarCodigoAscii(int[] quadro, int tipoDeImpressao) {
@@ -153,7 +153,7 @@ public class CamadaFisicaTransmissora {
         }
       }
     }
-    else{ //tipoDeImpressao == ASCII_CODIFICADO
+    else{ //tipoDeImpressao == ASCII_DECODIFICADO
       for(int i=0; i<quadro.length; i++){
         if(i == quadro.length-1){
           strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i]));

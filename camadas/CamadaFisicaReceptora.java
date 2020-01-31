@@ -14,9 +14,10 @@ import util.Conversao;
 public class CamadaFisicaReceptora {
   private static int[] fluxoBrutoDeBits;
 
-   /* *****************************************************************************
+  /* *****************************************************************************
   Metodo: camadaFisicaReceptora*
-  Funcao: Enviar o vetor com os numeros da tabela ASCII para a camada de aplicacao receptora*
+  Funcao: Enviar o vetor com os numeros da tabela ASCII para a camada de aplicacao
+          receptora*
   Parametros: int[] fluxoBrutoDeBitsPontoB: vetor com os bits recebidos*
   Retorno: void*
   ***************************************************************************** */
@@ -51,7 +52,7 @@ public class CamadaFisicaReceptora {
     CamadaDeAplicacaoReceptora.camadaDeAplicacaoReceptora(Conversao.bitsParaAscii(fluxoBrutoDeBits));
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: camadaFisicaReceptoraDecodificacaoBinaria*
   Funcao: Decodificar os bits da codificacao binaria*
   Parametros: int[] fluxoBrutoDeBits: bits a serem decodificados*
@@ -84,7 +85,7 @@ public class CamadaFisicaReceptora {
     return bitsDecodificados;
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: camadaFisicaReceptoraDecodificacaoManchesterDiferencial*
   Funcao: Decodificar os bits da codificacao manchester diferencial*
   Parametros: int[] fluxoBrutoDeBits: bits a serem decodificados*
