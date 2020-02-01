@@ -103,35 +103,38 @@ public class PainelEsquerdo extends JPanel {
       public Dimension getPreferredSize() {
         return new Dimension(90, TelaPrincipal.ALTURA_COMPONENTES);
       }
-    };
-    btnEnviar.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent e){
-        if(txtMensagem.getText().equals("")){
-          JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
-        }else{
-          CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-          repaint();
-        }
-      }
-    });
-    btnEnviar.addKeyListener(new KeyListener() {
-      @Override
-      public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ENTER){
-          if(txtMensagem.getText().equals("")){
-            System.out.println("msg nula");
-          }else{
-            CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-            repaint();
+      {
+        this.addActionListener(new ActionListener(){
+          @Override
+          public void actionPerformed(ActionEvent e){
+            if(txtMensagem.getText().equals("")){
+              JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+            }else{
+              CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+              repaint();
+            }
           }
-        }
+        });
+
+        this.addKeyListener(new KeyListener() {
+          @Override
+          public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER){
+              if(txtMensagem.getText().equals("")){
+                System.out.println("msg nula");
+              }else{
+                CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+                repaint();
+              }
+            }
+          }
+          @Override
+          public void keyTyped(KeyEvent e) {}
+          @Override
+          public void keyReleased(KeyEvent e){}
+        });
       }
-      @Override
-      public void keyTyped(KeyEvent e) {}
-      @Override
-      public void keyReleased(KeyEvent e){}
-    });
+    };
 
     //criando combo box
     String[] tiposDeCodificacao =
