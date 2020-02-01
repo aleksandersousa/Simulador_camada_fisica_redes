@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -107,7 +108,7 @@ public class PainelEsquerdo extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e){
         if(txtMensagem.getText().equals("")){
-          System.out.println("msg nula");
+          JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
         }else{
           CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
           repaint();
