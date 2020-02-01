@@ -2,7 +2,7 @@
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 29/01/2020*
+Ultima alteracao: 01/02/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
@@ -27,7 +27,7 @@ public class Conversao {
     }
 
     int[] quadro = new int[tamanho];
-    int[] temp = Conversao.reverter(fluxoBrutoDeBits); //reverte o array
+    int[] temp = Conversao.inverter(fluxoBrutoDeBits); //reverte o array
     int decimal = 0;
     for(int i=0, j=0, k=0; i<fluxoBrutoDeBits.length; i++){ //transforma em decimal
       decimal += temp[i]*Math.pow(2, j);
@@ -58,7 +58,7 @@ public class Conversao {
       j+=8;
     }
 
-    return Conversao.reverter(bitsBrutos);
+    return Conversao.inverter(bitsBrutos);
   }
 
   /* ***************************************************************
@@ -101,6 +101,50 @@ public class Conversao {
     return strBits.toString();
   }
 
+  /* **************************************************************
+  Metodo: asciiParaString*
+  Funcao: Transformar os elementos do vetor quadro em bits e colocar
+          os bits em uma string seguido da letra ou numero rspectivo
+          para imprimir na tela*
+  Parametros: int[] quadro: vetor com os numeros em ASCII
+              int tipoDeImpressao: em qual caixa de texto sera impresso*
+  Retorno: void*
+  *************************************************************** */
+  public static String asciiParaString(int[] quadro, int tipoDeFormato) {
+    StringBuilder strAscii = new StringBuilder();
+
+    if(tipoDeFormato == 0){ //tipoDeImpressao == ASCII
+      for(int i=0; i<quadro.length; i++){
+        if(i == quadro.length-1){
+          strAscii.append(Character.toString((char)quadro[i])+"->"+quadro[i]);
+        }
+        else{
+          strAscii.append(Character.toString((char)quadro[i])+"->"+quadro[i]+" ");
+        }
+      }
+    }
+    else{ //tipoDeImpressao == ASCII_DECODIFICADO
+      for(int i=0; i<quadro.length; i++){
+        if(i == quadro.length-1){
+          strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i]));
+        }
+        else{
+          strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i])+" ");
+        }
+      }
+    }
+
+    return strAscii.toString();
+  }
+
+  /* ***************************************************************
+  Metodo: converter*
+  Funcao: converte um numero inteiro em binario*
+  Parametros: int numero: numero a ser convertido
+              int[] bitsBrutos: array com os numeros da tabela ascii
+              int index: index para percorrer o array*
+  Retorno: void*
+  *************************************************************** */
   private static void converter(int numero, int[] bitsBrutos, int index) {
     if(numero > 0){
       bitsBrutos[index] = numero%2;
@@ -110,7 +154,13 @@ public class Conversao {
     }
   }
 
-  private static int[] reverter(int[] bits) {
+  /* ***************************************************************
+  Metodo: inverter*
+  Funcao: inverte o elementos de um array*
+  Parametros: int[] bits: vetor com os bits*
+  Retorno: int[] temp: vetor com os elementos invertidos*
+  *************************************************************** */
+  private static int[] inverter(int[] bits) {
     int[] temp = new int[bits.length];
     for(int i=bits.length-1, j=0; i>=0; i--){
       temp[j] = bits[i];

@@ -2,7 +2,7 @@
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 29/01/2020*
+Ultima alteracao: 01/02/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
@@ -40,7 +40,7 @@ public class MeioDeComunicacao {
         try {
           Canvas.trava.acquire();
         } catch (Exception e) {
-          System.out.println("Erro no acquire");
+          System.out.println("Erro no acquire do semaforo trava!");
         }
 
         CamadaFisicaReceptora.camadaFisicaReceptora(fluxoBrutoDeBitsPontoB);
