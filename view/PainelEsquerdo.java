@@ -14,6 +14,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
@@ -35,6 +37,7 @@ public class PainelEsquerdo extends JPanel {
 
   private JTextArea txtLabelNumerosAscii, txtLabelBitsBrutos;
   private JTextArea txtLabelBitsCodificados;
+  private JTextField txtMensagem;
   public static JButton btnEnviar;
 
   /* **************************************************************
@@ -72,7 +75,8 @@ public class PainelEsquerdo extends JPanel {
 
   /* **************************************************************
   Metodo: adicionarComponentes*
-  Funcao: inicializa e adiciona os componentes ao painel.*
+  Funcao: inicializa e adiciona os componentes ao painel e tem o
+          metodo aplicacao transmissora.*
   Parametros: nulo*
   Retorno: void*
   *************************************************************** */
@@ -89,11 +93,78 @@ public class PainelEsquerdo extends JPanel {
     Formatacao.inicializarLabelsDeTextos(
       txtLabelBitsCodificados, TelaPrincipal.LARGURA_LABELS_ESQUERDO, TelaPrincipal.ALTURA_LABELS);
 
+    this.aplicacaoTransmissora();
+
+    //criando combo box
+    String[] tiposDeCodificacao =
+    {"Codficacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
+
+    cmbListaDeCodificacao = new JComboBox<>(tiposDeCodificacao);
+    cmbListaDeCodificacao.setForeground(Color.RED);
+    cmbListaDeCodificacao.setSelectedIndex(0);
+    cmbListaDeCodificacao.setPreferredSize(new Dimension(406, TelaPrincipal.ALTURA_COMPONENTES));
+
+    //adicionando componentes aos paineis
+    arrayPaineis.get(0).add(txtMensagem);
+    arrayPaineis.get(0).add(btnEnviar);
+
+    arrayPaineis.get(1).add(txtLabelNumerosAscii);
+    arrayPaineis.get(1).add(
+      Formatacao.inicializarBarraDeRolagem(
+        PainelEsquerdo.arrayCaixasDeTexto.get(0), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES*2)); //Numeros Ascii
+
+    arrayPaineis.get(2).add(txtLabelBitsBrutos);
+    arrayPaineis.get(2).add(
+      Formatacao.inicializarBarraDeRolagem(
+        PainelEsquerdo.arrayCaixasDeTexto.get(2), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES)); //Bits brutos
+
+    arrayPaineis.get(3).add(txtLabelBitsCodificados);
+    arrayPaineis.get(3).add(
+      Formatacao.inicializarBarraDeRolagem(
+        PainelEsquerdo.arrayCaixasDeTexto.get(3), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES)); //Bits codificados
+
+    arrayPaineis.get(4).add(cmbListaDeCodificacao);
+
+    //adicionando paineis
+    this.add(arrayPaineis.get(0));
+    this.add(arrayPaineis.get(1));
+    this.add(arrayPaineis.get(2));
+    this.add(arrayPaineis.get(3));
+    this.add(arrayPaineis.get(4));
+  }
+
+  /* **************************************************************
+  Metodo: aplicacaoTransmissora*
+  Funcao: inicializa a caixa de texto de entrada e o botao enviar e
+          chama a camada de aplicacao transmissora.*
+  Parametros: nulo*
+  Retorno: void*
+  *************************************************************** */
+  private void aplicacaoTransmissora() {
     //criando text field
-    JTextField txtMensagem = new JTextField(){
+    txtMensagem = new JTextField("Digite sua mensagem"){
       @Override
       public Dimension getPreferredSize() {
         return new Dimension(308, TelaPrincipal.ALTURA_COMPONENTES);
+      }
+      {
+        this.addFocusListener(new FocusListener() {//adicionando hint text
+          @Override
+          public void focusGained(FocusEvent e) {
+            JTextField txt = (JTextField)e.getSource();
+            txt.setText("");
+            txt.setForeground(new Color(50, 50, 50));
+          }
+
+          @Override
+          public void focusLost(FocusEvent e) {
+            JTextField txt = (JTextField)e.getSource();
+            if(txt.getText().length() == 0){
+              txt.setText("Digite sua mensagem");
+              txt.setForeground(new Color(150, 150, 150));
+            }
+          }
+        });
       }
     };
 
@@ -135,43 +206,6 @@ public class PainelEsquerdo extends JPanel {
         });
       }
     };
-
-    //criando combo box
-    String[] tiposDeCodificacao =
-    {"Codficacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
-
-    cmbListaDeCodificacao = new JComboBox<>(tiposDeCodificacao);
-    cmbListaDeCodificacao.setForeground(Color.RED);
-    cmbListaDeCodificacao.setSelectedIndex(0);
-    cmbListaDeCodificacao.setPreferredSize(new Dimension(406, TelaPrincipal.ALTURA_COMPONENTES));
-
-    //adicionando componentes aos paineis
-    arrayPaineis.get(0).add(txtMensagem);
-    arrayPaineis.get(0).add(btnEnviar);
-
-    arrayPaineis.get(1).add(txtLabelNumerosAscii);
-    arrayPaineis.get(1).add(
-      Formatacao.inicializarBarraDeRolagem(
-        PainelEsquerdo.arrayCaixasDeTexto.get(0), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES*2)); //Numeros Ascii
-
-    arrayPaineis.get(2).add(txtLabelBitsBrutos);
-    arrayPaineis.get(2).add(
-      Formatacao.inicializarBarraDeRolagem(
-        PainelEsquerdo.arrayCaixasDeTexto.get(2), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES)); //Bits brutos
-
-    arrayPaineis.get(3).add(txtLabelBitsCodificados);
-    arrayPaineis.get(3).add(
-      Formatacao.inicializarBarraDeRolagem(
-        PainelEsquerdo.arrayCaixasDeTexto.get(3), TelaPrincipal.LARGURA_COMPONENTES, TelaPrincipal.ALTURA_COMPONENTES)); //Bits codificados
-
-    arrayPaineis.get(4).add(cmbListaDeCodificacao);
-
-    //adicionando paineis
-    this.add(arrayPaineis.get(0));
-    this.add(arrayPaineis.get(1));
-    this.add(arrayPaineis.get(2));
-    this.add(arrayPaineis.get(3));
-    this.add(arrayPaineis.get(4));
   }
 
   /* **************************************************************
