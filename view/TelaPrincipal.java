@@ -2,47 +2,47 @@
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 29/01/2020*
+Ultima alteracao: 01/02/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
 package view;
 
-import camadas.CamadaDeAplicacaoTransmissora;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 @SuppressWarnings("serial")
 public class TelaPrincipal extends JFrame {
+  public static final int LARGURA_LABELS_ESQUERDO = 120;
+  public static final int LARGURA_LABELS_DIREITO = 135;
+  public static final int ALTURA_LABELS = 18;
+  public static final int LARGURA_COMPONENTES = 280;
+  public static final int ALTURA_COMPONENTES = 40;
   public static final int ASCII = 0;
-  public static final int BIT_BRUTO = 1;
+  public static final int BIT_BRUTO = 5;
   public static final int ASCII_DECODIFICADO = 2;
   public static final int MENSAGEM_DECODIFICADA = 3;
   public static final int BIT_DECODIFICADO = 4;
-  public static final int BIT_CODIFICADO = 5;
+  public static final int BIT_CODIFICADO = 1;
   public static final int BIT_RECEBIDO = 6;
-  private static final int VELOCIDADE = 500;
+  private static final int VELOCIDADE = 600;
 
-  private static ArrayList<JTextArea> arrayCaixasDeTexto;
   public static Canvas canvas;
-  public static JComboBox<String> cmbListaDeCodificacao;
-  private JScrollPane barraDeRolagem;
+  public static JSlider barraDeVelocidade;
 
-  private JTextArea txtLabelMensagemDecodificada, txtLabelTabelaAscii, txtLabelBitsRecebidos;
-  private JTextArea txtLabelBitsBrutos, txtLabelTabelaAsciiDecodificada, txtLabelBitsDecodificados;
-  private JTextArea  txtLabelBitsCodificados;
+  private JPanel painelBackground;
+  private JPanel painelInferior;
+  private PainelEsquerdo painelEsquerdo;
+  private PainelDireito painelDireito;
 
   /* **************************************************************
   Metodo: TelaPrincipal*
@@ -50,29 +50,29 @@ public class TelaPrincipal extends JFrame {
   Parametros: nulo*
   Retorno: void*
   *************************************************************** */
-  public TelaPrincipal() {
-    this.initGUIComponents();
-
+  public TelaPrincipal(){
     TelaPrincipal.canvas = new Canvas();
 
-    this.txtLabelTabelaAscii = new JTextArea("Tabela Ascii: ");
-    this.txtLabelBitsBrutos = new JTextArea("Bits brutos: ");
-    this.txtLabelBitsDecodificados = new JTextArea("Bits decodificados: ");
-    this.txtLabelTabelaAsciiDecodificada = new JTextArea("Ascii decodificada: ");
-    this.txtLabelMensagemDecodificada = new JTextArea("Mensagem: ");
-    this.txtLabelBitsCodificados = new JTextArea("Bits codificados: ");
-    this.txtLabelBitsRecebidos = new JTextArea("Bits recebidos: ");
+    //inicializando jslider
+    TelaPrincipal.barraDeVelocidade = new JSlider(){
+      @Override
+      public Dimension getPreferredSize() {
+        return new Dimension(400, 50);
+      }
+      {
+        this.setBackground(Color.CYAN);
+        this.setMinimum(1);
+        this.setValue(5);
+        this.setMaximum(10);
+        this.addChangeListener( e -> Canvas.velocidade = this.getValue());
+      }
+    };
 
-    this.adicionarComponentes();
+    this.painelInferior = new JPanel();
+    this.painelEsquerdo = new PainelEsquerdo();
+    this.painelDireito = new PainelDireito();
 
-    this.add(txtLabelTabelaAscii);
-    this.add(txtLabelBitsBrutos);
-    this.add(txtLabelBitsDecodificados);
-    this.add(txtLabelMensagemDecodificada);
-    this.add(txtLabelTabelaAsciiDecodificada);
-    this.add(txtLabelBitsCodificados);
-    this.add(txtLabelBitsRecebidos);
-    this.add(canvas);
+    this.initGUIComponents();
   }
 
   /* **************************************************************
@@ -86,137 +86,63 @@ public class TelaPrincipal extends JFrame {
     this.setSize(930, 450);
     this.setResizable(false);
     this.setLocationRelativeTo(null);
-    this.setLayout(null);
+    this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+    this.getRootPane().setDefaultButton(PainelEsquerdo.btnEnviar);
     this.setVisible(true);
+
+    this.inicializarComponentes();
+    this.add(painelBackground);
+    this.add(painelInferior);
   }
 
   /* **************************************************************
-  Metodo: formatarLabelDeTexto*
-  Funcao: Formatar o labels de texto*
-  Parametros: JTextArea txtLabel: label a ser formatado
-                      Font fonte: fonte utilizada
-                      int x: localizacao x
-                      int y: localizacap y
-                      int largura: largura
-                      int altura: altura*
-  Retorno: void*
-  *************************************************************** */
-  private void formatarLabelDeTexto( JTextArea txtLabel, Font fonte, int x, int y, int largura, int altura) {
-     txtLabel.setBounds(x, y, largura, altura);
-     txtLabel.setFont(new Font("txt", Font.BOLD, 12));
-     txtLabel.setEditable(false);
-     txtLabel.setBackground(this.getBackground());
-  }
-
-  /* **************************************************************
-  Metodo: criarCaixasDeTexto*
-  Funcao: Criar as caixas de texto que exibem as informacoes em runtime*
+  Metodo: inicializarComponentes*
+  Funcao: inicializar os paineis que compoem a tela.*
   Parametros: nulo*
   Retorno: void*
   *************************************************************** */
-  private void criarCaixasDeTexto() {
-    arrayCaixasDeTexto = new ArrayList<JTextArea>();
-    Font fonte = new Font("txt", Font.BOLD, 12);
-    JTextArea txtCaixaDeTexto = null;
-
-    for(int i=0; i<7; i++){
-      txtCaixaDeTexto = new JTextArea();
-      txtCaixaDeTexto.setFont(fonte);
-      txtCaixaDeTexto.setEditable(false);
-
-      if(i>=2 && i<=3){ //adiciona a quebra de linha somente as caixas de texto ascii
-        txtCaixaDeTexto.setLineWrap(true);
-      }
-      arrayCaixasDeTexto.add(txtCaixaDeTexto);
-    }
-  }
-
-   /* **************************************************************
-  Metodo: criarBarraDeRolagem*
-  Funcao: Criar as barras de rolagem*
-  Parametros: JComponent component: component que se quer adicionar a barra
-                      int x: localizacao x
-                      int y: localizacap y
-                      int largura: largura
-                      int altura: altura*
-  Retorno: void*
-  *************************************************************** */
-  private void criarBarraDeRolagem(JComponent component, int x, int y, int largura, int altura) {
-      barraDeRolagem = new JScrollPane(component);
-      barraDeRolagem.setBounds(x, y, largura, altura);
-
-      this.add(barraDeRolagem);
-  }
-
-  /* **************************************************************
-  Metodo: adicionarComponentes*
-  Funcao: Adicionar os componentes a tela*
-  Parametros: nulo*
-  Retorno: void*
-  *************************************************************** */
-  private void adicionarComponentes() {
-    String[] tiposDeCodificacao = {"Codficacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
-
-    cmbListaDeCodificacao = new JComboBox<>(tiposDeCodificacao);
-    cmbListaDeCodificacao.setForeground(Color.RED);
-    cmbListaDeCodificacao.setSelectedIndex(0);
-    cmbListaDeCodificacao.setBounds(10, 250, 400, 40);
-
-    JTextField txtMensagem = new JTextField();
-    txtMensagem.setBounds(10, 10, 300, 40);
-    txtMensagem.addKeyListener(new KeyAdapter() {
+  private void inicializarComponentes() {
+    this.painelBackground = new JPanel(){
       @Override
-      public void keyTyped(KeyEvent e) { //Limitando input de texto
-        if(txtMensagem.getText().length() >= 44){
-          e.consume();
-        }
+      public Dimension getPreferredSize() {
+        return new Dimension(0, 320);
       }
-    });
-
-    JButton btnEnviar = new JButton("Enviar"){
-      ActionListener acaoEnviar = new ActionListener(){
-        @Override
-        public void actionPerformed(ActionEvent e){
-          if(!arrayCaixasDeTexto.get(2).getText().equals(null)){
-            arrayCaixasDeTexto.get(2).setText(null);
-          }
-          CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-          repaint();
-        }
-      };
-
       {
-        this.setBounds(320, 10, 90, 40);
-        this.setFont(new Font("btnEnviar", Font.BOLD, 10));
-        this.addActionListener(acaoEnviar);
+        this.setLayout(new GridLayout(0, 2));
+        this.add(painelEsquerdo);
+        this.add(painelDireito);
       }
     };
 
-    Font fonte = new Font("txt", Font.BOLD, 12);
-    this.criarCaixasDeTexto();
+    this.painelInferior = new JPanel(){
+      JPanel painel1 = new JPanel();
+      JLabel labelBarraDeVelocidade  = new JLabel("Barra de velocidade");
 
-    this.formatarLabelDeTexto(this.txtLabelTabelaAscii, fonte, 10, 88, 120, 18);
-    this.formatarLabelDeTexto(this.txtLabelBitsBrutos, fonte, 10, 160, 120, 18);
-    this.formatarLabelDeTexto(this.txtLabelBitsCodificados, fonte, 10, 210, 120, 18);
-    this.formatarLabelDeTexto(this.txtLabelBitsRecebidos, fonte, 500, 210, 135, 18);
-    this.formatarLabelDeTexto(this.txtLabelBitsDecodificados, fonte, 500, 160, 135, 18);
-    this.formatarLabelDeTexto(this.txtLabelTabelaAsciiDecodificada, fonte, 500, 88, 135, 18);
-    this.formatarLabelDeTexto(this.txtLabelMensagemDecodificada, fonte, 500, 20, 135, 18);
+      private void iniciarPainel1(){
+        labelBarraDeVelocidade.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(0), 130, 150, 280, 40); //bits brutos
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(1), 635, 150, 280, 40); //bits decodificados
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(2), 130, 60, 280, 80); //tabela ascii
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(3), 635, 60, 280, 80); //tabela ascii decodificada
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(4), 635, 10, 280, 40); //mensagem decodificada
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(5), 635, 200, 280, 40); //bits recebidos
-    this.criarBarraDeRolagem(TelaPrincipal.arrayCaixasDeTexto.get(6), 130, 200, 280, 40); //bitis codificados
+        painel1.setLayout(new BoxLayout(painel1, BoxLayout.Y_AXIS));
+        painel1.setBackground(Color.CYAN);
+        painel1.add(labelBarraDeVelocidade);
+        painel1.add(barraDeVelocidade);
+      }
 
-    this.add(txtMensagem);
-    this.add(btnEnviar);
-    this.add(cmbListaDeCodificacao);
+      @Override
+      public Dimension getPreferredSize() {
+        return new Dimension(0, 110);
+      }
+      {
+        this.iniciarPainel1();
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.setBackground(Color.CYAN);
+        this.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
+        this.add(painel1);
+        this.add(canvas);
+      }
+    };
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: imprimirNaTela*
   Funcao: Imprimir as informacoes na tela*
   Parametros: String strMensagem: texto a ser impresso
@@ -227,36 +153,36 @@ public class TelaPrincipal extends JFrame {
     try {
       switch (tipoDeImpressao) {
         case 0: //imprime tabela ascii
-          TelaPrincipal.arrayCaixasDeTexto.get(2).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(2).update(arrayCaixasDeTexto.get(2).getGraphics());
+          PainelEsquerdo.arrayCaixasDeTexto.get(0).setText(strMensagem);
+          PainelEsquerdo.arrayCaixasDeTexto.get(0).update(PainelEsquerdo.arrayCaixasDeTexto.get(0).getGraphics());
           break;
         case 1: //imprime os bits codificados
-          TelaPrincipal.arrayCaixasDeTexto.get(0).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(0).update(arrayCaixasDeTexto.get(0).getGraphics());
+          PainelEsquerdo.arrayCaixasDeTexto.get(3).setText(strMensagem);
+          PainelEsquerdo.arrayCaixasDeTexto.get(3).update(PainelEsquerdo.arrayCaixasDeTexto.get(3).getGraphics());
           break;
         case 2: //imprime tabela ascii decodificada
-          TelaPrincipal.arrayCaixasDeTexto.get(3).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(3).update(arrayCaixasDeTexto.get(3).getGraphics());
+          PainelDireito.arrayCaixasDeTexto.get(1).setText(strMensagem);
+          PainelDireito.arrayCaixasDeTexto.get(1).update(PainelDireito.arrayCaixasDeTexto.get(1).getGraphics());
           break;
         case 3: //imprime mensagem decodificada
-          TelaPrincipal.arrayCaixasDeTexto.get(4).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(4).update(arrayCaixasDeTexto.get(4).getGraphics());
+          PainelDireito.arrayCaixasDeTexto.get(4).setText(strMensagem);
+          PainelDireito.arrayCaixasDeTexto.get(4).update(PainelDireito.arrayCaixasDeTexto.get(4).getGraphics());
           break;
         case 4: //imprime bits decodificados
-          TelaPrincipal.arrayCaixasDeTexto.get(1).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(1).update(arrayCaixasDeTexto.get(1).getGraphics());
+          PainelDireito.arrayCaixasDeTexto.get(5).setText(strMensagem);
+          PainelDireito.arrayCaixasDeTexto.get(5).update(PainelDireito.arrayCaixasDeTexto.get(5).getGraphics());
           break;
-        case 5: //imprime bits antes de decodificar
-          TelaPrincipal.arrayCaixasDeTexto.get(6).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(6).update(arrayCaixasDeTexto.get(6).getGraphics());
+        case 5: //imprime bits brutos
+          PainelEsquerdo.arrayCaixasDeTexto.get(2).setText(strMensagem);
+          PainelEsquerdo.arrayCaixasDeTexto.get(2).update(PainelEsquerdo.arrayCaixasDeTexto.get(2).getGraphics());
           break;
         case 6: //imprime os bits recebidos
-          TelaPrincipal.arrayCaixasDeTexto.get(5).setText(strMensagem);
-          TelaPrincipal.arrayCaixasDeTexto.get(5).update(arrayCaixasDeTexto.get(5).getGraphics());
+          PainelDireito.arrayCaixasDeTexto.get(6).setText(strMensagem);
+          PainelDireito.arrayCaixasDeTexto.get(6).update(PainelDireito.arrayCaixasDeTexto.get(6).getGraphics());
           break;
       }
 
-      Thread.sleep(TelaPrincipal.VELOCIDADE);
+      Thread.sleep(VELOCIDADE);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -272,7 +198,7 @@ public class TelaPrincipal extends JFrame {
     try {
       TelaPrincipal.canvas.repintar();
 
-      Thread.sleep(TelaPrincipal.VELOCIDADE);
+      Thread.sleep(VELOCIDADE);
     } catch (Exception e) {
      e.printStackTrace();
     }

@@ -2,7 +2,7 @@
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 29/01/2020*
+Ultima alteracao: 01/02/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
@@ -11,10 +11,12 @@ package view;
 import img.Images;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Stroke;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
@@ -25,13 +27,13 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class Canvas extends JPanel {
   private final int Y = 18;
-  private final int LARGURA = 60;
+  private final int LARGURA = 57;
   private final int ALTURA = 60;
-  private final int ESPACAMENTO = 57;
+  private final int ESPACAMENTO = 54;
 
   public static boolean flag; //flag que indica se o painel pode ser repintado
   private static int x;
-  private long velocidade = 1000;
+  public static int velocidade = 2;
 
   private static ArrayList<Image> linhas;
   public static ArrayList<Integer> fluxoDeBits;
@@ -47,7 +49,8 @@ public class Canvas extends JPanel {
   Retorno: void*
   *************************************************************** */
   public Canvas() {
-    this.initGUIComponents();
+    this.setBackground(Color.CYAN);
+    this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
     this.imagens = new Images();
 
     Canvas.linhas = imagens.getLinhas();
@@ -55,18 +58,6 @@ public class Canvas extends JPanel {
     Canvas.tempLinhas = new LinkedList<>();
     Canvas.trava = new Semaphore(0); //semaforo para travar as camadas decodificadoras
                                     // ate a animacao ser concluida
-  }
-
-  /* **************************************************************
-  Metodo: initGUIComponents*
-  Funcao: inicializar os componentes do painel.*
-  Parametros: nulo*
-  Retorno: void*
-  *************************************************************** */
-  private void initGUIComponents() {
-    this.setBounds(10, 300, 905,  100);
-    this.setBorder(BorderFactory.createLineBorder(Color.RED));
-    this.setBackground(Color.gray);
   }
 
   /* **************************************************************
@@ -136,7 +127,7 @@ public class Canvas extends JPanel {
         try {
           while(true){
             repaint();
-            Thread.sleep(velocidade);
+            Thread.sleep(1000/velocidade);
           }
         } catch (InterruptedException e) {
           Canvas.flag = false;
@@ -178,5 +169,16 @@ public class Canvas extends JPanel {
         atualizar.interrupt();
       }
     }
+  }
+
+  /* **************************************************************
+  Metodo: getPreferredSize*
+  Funcao: seta o tamanho deste painel.*
+  Parametros: nulo*
+  Retorno: void*
+  *************************************************************** */
+  @Override
+  public Dimension getPreferredSize() {
+    return new Dimension(460, 0);
   }
 }
