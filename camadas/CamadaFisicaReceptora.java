@@ -95,16 +95,18 @@ public class CamadaFisicaReceptora {
     int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
     int cont = 0; //numero de vezes que o bit 1 repete
     int cont2 = 0; //numero de vezes que o bit 0 repete
+
     for(int i=0, j=1; i<fluxoBrutoDeBits.length; i+=2){
       if(i == 0){
-        if(fluxoBrutoDeBits[i] == 1 && fluxoBrutoDeBits[i+1] == 0){
-          bitsDecodificados[i] = 0;
+        if(fluxoBrutoDeBits[0] == 1 && fluxoBrutoDeBits[1] == 0){
+          bitsDecodificados[0] = 0;
+          cont2++;
         }
         else{
-          bitsDecodificados[i] = 1;
+          bitsDecodificados[0] = 1;
+          cont++;
         }
-      }
-      else if(fluxoBrutoDeBits[i] == fluxoBrutoDeBits[i-1] && cont == 0){
+      }else if(fluxoBrutoDeBits[i] == fluxoBrutoDeBits[i-1] && cont == 0){
         bitsDecodificados[j] = 1-bitsDecodificados[j-1];
         cont++;
         cont2 = 0;
