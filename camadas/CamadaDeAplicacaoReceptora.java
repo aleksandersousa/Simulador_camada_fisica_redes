@@ -15,11 +15,22 @@ public class CamadaDeAplicacaoReceptora {
 
   /* *****************************************************************************
   Metodo: camadaDeAplicacaoReceptora*
-  Funcao: Imprimir a mensagem decodificada na tela*
+  Funcao: Converter o array de numeros ascii em string*
   Parametros: int[] quadro: vetor com os numeros em ASCII*
   Retorno: void*
   ***************************************************************************** */
   public static void camadaDeAplicacaoReceptora(int[] quadro) {
-    TelaPrincipal.imprimirNaTela(Conversao.asciiParaMensagem(quadro), TelaPrincipal.MENSAGEM_DECODIFICADA);
+    String mensagem = Conversao.asciiParaMensagem(quadro);
+    CamadaDeAplicacaoReceptora.aplicacaoReceptora(mensagem);
+  }
+
+  /* *****************************************************************************
+  Metodo: aplicacaoReceptora*
+  Funcao: Imprimir a mensagem decodificada na tela*
+  Parametros: String mensagem: mensagem a ser impressa*
+  Retorno: void*
+  ***************************************************************************** */
+  public static void aplicacaoReceptora(String mensagem) {
+    TelaPrincipal.imprimirNaTela(mensagem, TelaPrincipal.MENSAGEM_DECODIFICADA);
   }
 }
