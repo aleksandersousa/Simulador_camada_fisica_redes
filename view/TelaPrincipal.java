@@ -37,7 +37,6 @@ public class TelaPrincipal extends JFrame {
   private static final int VELOCIDADE = 600;
 
   public static Canvas canvas;
-  public static JSlider barraDeVelocidade;
 
   private JPanel painelBackground;
   private JPanel painelInferior;
@@ -52,21 +51,6 @@ public class TelaPrincipal extends JFrame {
   *************************************************************** */
   public TelaPrincipal(){
     TelaPrincipal.canvas = new Canvas();
-
-    //inicializando jslider
-    TelaPrincipal.barraDeVelocidade = new JSlider(){
-      @Override
-      public Dimension getPreferredSize() {
-        return new Dimension(400, 50);
-      }
-      {
-        this.setBackground(Color.CYAN);
-        this.setMinimum(1);
-        this.setValue(5);
-        this.setMaximum(10);
-        this.addChangeListener( e -> Canvas.velocidade = this.getValue());
-      }
-    };
 
     this.painelInferior = new JPanel();
     this.painelEsquerdo = new PainelEsquerdo();
@@ -117,6 +101,19 @@ public class TelaPrincipal extends JFrame {
     this.painelInferior = new JPanel(){
       JPanel painel1 = new JPanel();
       JLabel labelBarraDeVelocidade  = new JLabel("Barra de velocidade");
+      JSlider barraDeVelocidade = new JSlider(){
+        @Override
+        public Dimension getPreferredSize() {
+          return new Dimension(400, 50);
+        }
+        {
+          this.setBackground(Color.CYAN);
+          this.setMinimum(1);
+          this.setValue(5);
+          this.setMaximum(10);
+          this.addChangeListener( e -> Canvas.velocidade = this.getValue());
+        }
+      };
 
       private void iniciarPainel1(){
         labelBarraDeVelocidade.setAlignmentX(Component.CENTER_ALIGNMENT);
