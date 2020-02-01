@@ -133,6 +133,6 @@ public class CamadaFisicaReceptora {
 
     TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
 
-    return bitsDecodificados;
+    return Conversao.bitsParaAscii(bitsDecodificados);
   }
 }
