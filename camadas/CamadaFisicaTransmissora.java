@@ -2,12 +2,13 @@
 Autor: Aleksander Santos Sousa*
 Matricula: 201810825*
 Inicio: 23/01/2020*
-Ultima alteracao: 29/01/2020*
+Ultima alteracao: 01/02/2020*
 Nome: Simulador de Redes*
 Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
 package camadas;
 
+import view.PainelEsquerdo;
 import view.TelaPrincipal;
 import util.Conversao;
 import util.MeioDeComunicacao;
@@ -22,51 +23,52 @@ public class CamadaFisicaTransmissora {
   Retorno: void*
   ***************************************************************************** */
   public static void camadaFisicaTransmissora(int[] quadro) {
-    int tipoDeCodificacao = TelaPrincipal.cmbListaDeCodificacao.getSelectedIndex();
+    int tipoDeCodificacao = PainelEsquerdo.cmbListaDeCodificacao.getSelectedIndex();
 
     //imprime todo o passo a passo na tela
     switch(tipoDeCodificacao) {
       case 0: //codificao binaria
-        fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoBinaria(quadro);
-
-        CamadaFisicaTransmissora.mostrarCodigoAscii(quadro, TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
         TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_CODIFICADO);
+
+        fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoBinaria(quadro);
         break;
       case 1: //codificacao manchester
-        fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchester(quadro);
-
-        CamadaFisicaTransmissora.mostrarCodigoAscii(quadro, TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
         TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_CODIFICADO);
+
+        fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchester(quadro);
         break;
       case 2: //codificacao manchester diferencial
-        fluxoBrutoDeBits =  CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
-
-        CamadaFisicaTransmissora.mostrarCodigoAscii(quadro, TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
         TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_CODIFICADO);
+
+        fluxoBrutoDeBits =  CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
         break;
     }
 
     MeioDeComunicacao.meioDeComunicacao(fluxoBrutoDeBits);
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: camadaFisicaTransmissoraCodificacaoBinaria*
-  Funcao: Transformar os elementos do vetor quadro em bits e colocar os bits na
-                codificacao binaria*
+  Funcao: Transformar os elementos do vetor quadro em bits e colocar
+          os bits na codificacao binaria*
   Parametros: int[] quadro: vetor com os numeros em ASCII*
   Retorno: int[] bitsCodificados*
   *************************************************************** */
   private static int[] camadaFisicaTransmissoraCodificacaoBinaria(int[] quadro) {
-    return Conversao.asciiParaBits(quadro);
+    int[] bitsCodificados = Conversao.asciiParaBits(quadro);
+
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);
+
+    return bitsCodificados;
   }
 
-   /* **************************************************************
+  /* **************************************************************
   Metodo: camadaFisicaTransmissoraCodificacaoManchester*
-  Funcao: Transformar os elementos do vetor quadro em bits e colocar os bits na
-                codificacao manchester*
+  Funcao: Transformar os elementos do vetor quadro em bits e colocar
+          os bits na codificacao manchester*
   Parametros: int[] quadro: vetor com os numeros em ASCII*
   Retorno: int[] bitsCodificados*
   *************************************************************** */
@@ -85,6 +87,8 @@ public class CamadaFisicaTransmissora {
       }
       j++;
     }
+
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);
 
     return bitsCodificados;
   }
@@ -129,41 +133,8 @@ public class CamadaFisicaTransmissora {
       j++;
     }
 
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);
+
     return bitsCodificados;
-  }
-
-   /* **************************************************************
-  Metodo: mostrarCodigoAscii*
-  Funcao: Transformar os elementos do vetor quadro em bits e colocar os bits em
-          uma string para imprimir na tela*
-  Parametros: int[] quadro: vetor com os numeros em ASCII
-              int tipoDeImpressao: em qual caixa de texto sera impresso*
-  Retorno: void*
-  *************************************************************** */
-  public static void mostrarCodigoAscii(int[] quadro, int tipoDeImpressao) {
-    StringBuilder strAscii = new StringBuilder();
-
-    if(tipoDeImpressao == 0){ //tipoDeImpressao == ASCII
-      for(int i=0; i<quadro.length; i++){
-        if(i == quadro.length-1){
-          strAscii.append(Character.toString((char)quadro[i])+"->"+quadro[i]);
-        }
-        else{
-          strAscii.append(Character.toString((char)quadro[i])+"->"+quadro[i]+" ");
-        }
-      }
-    }
-    else{ //tipoDeImpressao == ASCII_DECODIFICADO
-      for(int i=0; i<quadro.length; i++){
-        if(i == quadro.length-1){
-          strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i]));
-        }
-        else{
-          strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i])+" ");
-        }
-      }
-    }
-
-    TelaPrincipal.imprimirNaTela(strAscii.toString(), tipoDeImpressao);
   }
 }

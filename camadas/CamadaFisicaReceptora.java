@@ -8,6 +8,7 @@ Funcao: Simular o envio de uma mensagem de texto.
 *************************************************************** */
 package camadas;
 
+import view.PainelEsquerdo;
 import view.TelaPrincipal;
 import util.Conversao;
 
@@ -22,34 +23,25 @@ public class CamadaFisicaReceptora {
   Retorno: void*
   ***************************************************************************** */
   public static void camadaFisicaReceptora(int[] fluxoBrutoDeBitsPontoB) {
-    int tipoDeDecodificacao = TelaPrincipal.cmbListaDeCodificacao.getSelectedIndex();
+    int tipoDeDecodificacao = PainelEsquerdo.cmbListaDeCodificacao.getSelectedIndex();
 
     //imprime todo o passo a passo na tela
     switch(tipoDeDecodificacao) {
       case 0: //decodificacao Binaria
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoBinaria(fluxoBrutoDeBitsPontoB);
-
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBitsPontoB), TelaPrincipal.BIT_RECEBIDO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
-        CamadaFisicaTransmissora.mostrarCodigoAscii(Conversao.bitsParaAscii(fluxoBrutoDeBits), TelaPrincipal.ASCII_DECODIFICADO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
       case 1: //decodificacoa Manchester
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchester(fluxoBrutoDeBitsPontoB);
-
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBitsPontoB), TelaPrincipal.BIT_RECEBIDO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
-        CamadaFisicaTransmissora.mostrarCodigoAscii(Conversao.bitsParaAscii(fluxoBrutoDeBits), TelaPrincipal.ASCII_DECODIFICADO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
       case 2: //decodificacao Manchester Diferencial
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchesterDiferencial(fluxoBrutoDeBitsPontoB);
-
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBitsPontoB), TelaPrincipal.BIT_RECEBIDO);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
-        CamadaFisicaTransmissora.mostrarCodigoAscii(Conversao.bitsParaAscii(fluxoBrutoDeBits), TelaPrincipal.ASCII_DECODIFICADO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
     }
 
-    CamadaDeAplicacaoReceptora.camadaDeAplicacaoReceptora(Conversao.bitsParaAscii(fluxoBrutoDeBits));
+    CamadaDeAplicacaoReceptora.camadaDeAplicacaoReceptora(fluxoBrutoDeBits);
   }
 
   /* **************************************************************
@@ -59,8 +51,10 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoBinaria(int[] fluxoBrutoDeBits) {
-    int[] bitsDecodificados = fluxoBrutoDeBits;
-    return bitsDecodificados;
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
+
+    return Conversao.bitsParaAscii(fluxoBrutoDeBits);
   }
 
   /* **************************************************************
@@ -70,6 +64,8 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoManchester(int[] fluxoBrutoDeBits) {
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
+
     int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
     for(int i=0, j=0; i<fluxoBrutoDeBits.length; i+=2){
       if(fluxoBrutoDeBits[i] == 1){
@@ -82,7 +78,9 @@ public class CamadaFisicaReceptora {
       }
     }
 
-    return bitsDecodificados;
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
+
+    return Conversao.bitsParaAscii(bitsDecodificados);
   }
 
   /* **************************************************************
@@ -92,8 +90,9 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoManchesterDiferencial(int[] fluxoBrutoDeBits) {
-    int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
 
+    int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
     int cont = 0; //numero de vezes que o bit 1 repete
     int cont2 = 0; //numero de vezes que o bit 0 repete
     for(int i=0, j=1; i<fluxoBrutoDeBits.length; i+=2){
@@ -131,6 +130,8 @@ public class CamadaFisicaReceptora {
         j++;
       }
     }
+
+    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
 
     return bitsDecodificados;
   }
