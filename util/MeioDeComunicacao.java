@@ -38,7 +38,7 @@ public class MeioDeComunicacao {
         TelaPrincipal.repintarPainel();
 
         try {
-          Canvas.trava.acquire();
+          Canvas.trava.acquire(); //trava esse thread ate o canvas terminar a animacao
         } catch (Exception e) {
           System.out.println("Erro no acquire do semaforo trava!");
         }

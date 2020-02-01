@@ -51,7 +51,7 @@ public class Conversao {
   Retorno: int[] bitsBrutos: vetor com os bits*
   *************************************************************** */
   public static int[] asciiParaBits(int[] quadro) {
-    int[] bitsBrutos = new int[quadro.length*8];
+    int[] bitsBrutos = new int[quadro.length*8]; //cada numero sao 8 bits
 
     for(int i=0, j=0; i<quadro.length; i++){
       Conversao.converter(quadro[i], bitsBrutos, j);
@@ -87,8 +87,7 @@ public class Conversao {
     StringBuilder strBits = new StringBuilder();
     strBits.append(bits[0]);
 
-    int i=1;
-    for(; i<bits.length; i++){
+    for(int i=1; i<bits.length; i++){
       if(i % 8 == 0){
         strBits.append(" ");
         strBits.append(bits[i]);
@@ -113,7 +112,7 @@ public class Conversao {
   public static String asciiParaString(int[] quadro, int tipoDeFormato) {
     StringBuilder strAscii = new StringBuilder();
 
-    if(tipoDeFormato == 0){ //tipoDeImpressao == ASCII
+    if(tipoDeFormato == 0){ //tipoDeFormato == ASCII
       for(int i=0; i<quadro.length; i++){
         if(i == quadro.length-1){
           strAscii.append(Character.toString((char)quadro[i])+"->"+quadro[i]);
@@ -123,7 +122,7 @@ public class Conversao {
         }
       }
     }
-    else{ //tipoDeImpressao == ASCII_DECODIFICADO
+    else{ //tipoDeFormato == ASCII_DECODIFICADO
       for(int i=0; i<quadro.length; i++){
         if(i == quadro.length-1){
           strAscii.append(quadro[i]+"->"+Character.toString((char)quadro[i]));
@@ -150,7 +149,7 @@ public class Conversao {
       bitsBrutos[index] = numero%2;
       index++;
 
-      converter(numero >> 1, bitsBrutos, index);
+      Conversao.converter(numero >> 1, bitsBrutos, index);
     }
   }
 
