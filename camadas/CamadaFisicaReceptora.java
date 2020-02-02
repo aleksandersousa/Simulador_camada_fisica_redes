@@ -104,7 +104,6 @@ public class CamadaFisicaReceptora {
         }
         else{
           bitsDecodificados[0] = 1;
-          cont++;
         }
       }else if(fluxoBrutoDeBits[i] == fluxoBrutoDeBits[i-1] && cont == 0){
         bitsDecodificados[j] = 1-bitsDecodificados[j-1];
