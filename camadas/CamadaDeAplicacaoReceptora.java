@@ -38,7 +38,7 @@ public class CamadaDeAplicacaoReceptora {
     try {
       PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
 
-      PainelEsquerdo.mutex.release();
+      PainelEsquerdo.mutex.release(); //libera o combobox
     } catch (Exception e) {
       System.out.println("Erro ao dar acquire na aplicacao receptora!");
     }
