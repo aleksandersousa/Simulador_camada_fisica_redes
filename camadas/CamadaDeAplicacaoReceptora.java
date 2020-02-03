@@ -35,12 +35,8 @@ public class CamadaDeAplicacaoReceptora {
   public static void aplicacaoReceptora(String mensagem) {
     TelaPrincipal.imprimirNaTela(mensagem, TelaPrincipal.MENSAGEM_DECODIFICADA);
 
-    try {
-      PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
+    PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
 
-      PainelEsquerdo.mutex.release(); //libera o combobox
-    } catch (Exception e) {
-      System.out.println("Erro ao dar acquire na aplicacao receptora!");
-    }
+    PainelEsquerdo.mutex.release(); //libera o combobox
   }
 }
