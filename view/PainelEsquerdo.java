@@ -200,15 +200,8 @@ public class PainelEsquerdo extends JPanel {
 
                       PainelEsquerdo.mutex.release(); //libera o combobox
                     }else{
-                      if(!Canvas.atualizar.isAlive()){
-                        CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-                        repaint();
-
-                        PainelEsquerdo.mutex.release(); //libera o combobox
-                      }else{
-                        JOptionPane.showMessageDialog(
-                          null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
-                      }
+                      CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+                      repaint();
                     }
                   }else{
                     JOptionPane.showMessageDialog(
