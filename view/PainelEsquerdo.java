@@ -97,7 +97,7 @@ public class PainelEsquerdo extends JPanel {
 
     //criando combo box
     String[] tiposDeCodificacao =
-    {"Codficacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
+    {"Codificacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
 
     cmbListaDeCodificacao = new JComboBox<>(tiposDeCodificacao);
     cmbListaDeCodificacao.setForeground(Color.RED);
