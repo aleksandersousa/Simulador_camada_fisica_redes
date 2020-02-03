@@ -197,6 +197,8 @@ public class PainelEsquerdo extends JPanel {
                         null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
 
                       PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
+
+                      PainelEsquerdo.mutex.release(); //libera o combobox
                     }else{
                       if(!Canvas.atualizar.isAlive()){
                         CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
