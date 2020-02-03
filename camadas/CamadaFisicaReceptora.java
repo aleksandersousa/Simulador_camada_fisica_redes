@@ -30,14 +30,17 @@ public class CamadaFisicaReceptora {
       case 0: //decodificacao Binaria
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoBinaria(fluxoBrutoDeBitsPontoB);
         TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
+        PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
         break;
       case 1: //decodificacoa Manchester
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchester(fluxoBrutoDeBitsPontoB);
         TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
+        PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
         break;
       case 2: //decodificacao Manchester Diferencial
         fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchesterDiferencial(fluxoBrutoDeBitsPontoB);
         TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
+        PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
         break;
     }
 

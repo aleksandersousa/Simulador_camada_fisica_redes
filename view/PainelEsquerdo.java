@@ -10,6 +10,7 @@ package view;
 
 import camadas.CamadaDeAplicacaoTransmissora;
 import util.Formatacao;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -95,7 +96,7 @@ public class PainelEsquerdo extends JPanel {
 
     this.aplicacaoTransmissora();
 
-    //criando combo box
+    //criando combobox
     String[] tiposDeCodificacao =
     {"Codificacao Binaria", "Codificacao Manchester", "Codificacao Manchester Diferencial"};
 
@@ -181,8 +182,13 @@ public class PainelEsquerdo extends JPanel {
             if(txtMensagem.getText().equals("")){
               JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
             }else{
-              CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-              repaint();
+              if(!Canvas.atualizar.isAlive()){
+                PainelEsquerdo.cmbListaDeCodificacao.setEnabled(false); //desativa a combobox
+                CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+                repaint();
+              }else{
+                JOptionPane.showMessageDialog(null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+              }
             }
           }
         });
@@ -200,7 +206,7 @@ public class PainelEsquerdo extends JPanel {
             }
           }
           @Override
-          public void keyTyped(KeyEvent e) {}
+          public void keyTyped(KeyEvent e){}
           @Override
           public void keyReleased(KeyEvent e){}
         });

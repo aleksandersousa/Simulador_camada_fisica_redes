@@ -35,11 +35,11 @@ public class Canvas extends JPanel {
   private static int x;
   public static int velocidade = 2;
 
+  public static Thread atualizar = new Thread();
   private static ArrayList<Image> linhas;
   public static ArrayList<Integer> fluxoDeBits;
   private static LinkedList<Image> tempLinhas;
   public static Semaphore trava;
-  private static Thread atualizar;
   private Images imagens;
 
   /* **************************************************************
