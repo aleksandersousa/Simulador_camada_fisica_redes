@@ -21,6 +21,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -40,6 +41,7 @@ public class PainelEsquerdo extends JPanel {
   private JTextArea txtLabelBitsCodificados;
   private JTextField txtMensagem;
   public static JButton btnEnviar;
+  public static ReduzirPermissoes mutex; //semaforo que trava o combobox
 
   /* **************************************************************
   Metodo: PainelEsquerdo*
@@ -53,6 +55,7 @@ public class PainelEsquerdo extends JPanel {
     this.txtLabelBitsBrutos = new JTextArea("Bits Brutos: ");
     this.txtLabelBitsCodificados = new JTextArea("Bits Codificados: ");
 
+    PainelEsquerdo.mutex = new ReduzirPermissoes(1);
     PainelEsquerdo.arrayCaixasDeTexto = Formatacao.inicializarCaixasDeTexto();
 
     //Inicializando array de paineis
@@ -176,20 +179,47 @@ public class PainelEsquerdo extends JPanel {
         return new Dimension(90, TelaPrincipal.ALTURA_COMPONENTES);
       }
       {
-        this.addActionListener(new ActionListener(){
+        this.addActionListener(new ActionListener() {
           @Override
-          public void actionPerformed(ActionEvent e){
-            if(txtMensagem.getText().equals("")){
-              JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
-            }else{
-              if(!Canvas.atualizar.isAlive()){
-                PainelEsquerdo.cmbListaDeCodificacao.setEnabled(false); //desativa a combobox
-                CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-                repaint();
-              }else{
-                JOptionPane.showMessageDialog(null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+          public void actionPerformed(ActionEvent e) {
+            new Thread(new Runnable(){
+              @Override
+              public void run() {
+                try {
+                  if(PainelEsquerdo.mutex.tryAcquire()){ //trava o combobox
+                    PainelEsquerdo.cmbListaDeCodificacao.setEnabled(false); //desativa combobox
+
+                    PainelEsquerdo.cmbListaDeCodificacao.update(
+                      PainelEsquerdo.cmbListaDeCodificacao.getGraphics());
+
+                    if(txtMensagem.getText().equals("")){
+                      JOptionPane.showMessageDialog(
+                        null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+
+                      PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
+                    }else{
+                      if(!Canvas.atualizar.isAlive()){
+                        CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+                        repaint();
+
+                        PainelEsquerdo.mutex.release(); //libera o combobox
+                      }else{
+                        JOptionPane.showMessageDialog(
+                          null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+                      }
+                    }
+                  }else{
+                    JOptionPane.showMessageDialog(
+                      null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+
+                    //elimina os threads da fila de espera
+                    PainelEsquerdo.mutex.callReducePermits(PainelEsquerdo.mutex.getQueueLength());
+                  }
+                } catch (Exception ex) {
+                  System.out.println("Erro ao travar no painel esquerdo!");
+                }
               }
-            }
+            }).start();
           }
         });
 
@@ -223,5 +253,29 @@ public class PainelEsquerdo extends JPanel {
   @Override
   public Dimension getPreferredSize() {
     return new Dimension(600, 300);
+  }
+
+  //classe para reduzir o numero de threads na fila de enviar
+  public class ReduzirPermissoes extends Semaphore {
+
+    /* **************************************************************
+    Metodo: ReduzirPermissoes*
+    Funcao: Construtor da classe reduzirPermissoes.*
+    Parametros: nulo*
+    Retorno: void*
+    *************************************************************** */
+    public ReduzirPermissoes(int permits) { //mensagens
+      super(permits);
+    }
+
+    /* **************************************************************
+    Metodo: callReducePermits*
+    Funcao: Chamar o metodo protegido da classe Semaphore reducePermits.*
+    Parametros: nulo*
+    Retorno: void*
+    *************************************************************** */
+    public void callReducePermits(int reduction) {
+      this.reducePermits(reduction);
+    }
   }
 }

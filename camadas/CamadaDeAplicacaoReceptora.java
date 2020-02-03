@@ -9,6 +9,8 @@ Funcao: Simular o envio de uma mensagem de texto.
 package camadas;
 
 import view.TelaPrincipal;
+import view.PainelEsquerdo;
+
 import util.Conversao;
 
 public class CamadaDeAplicacaoReceptora {
@@ -32,5 +34,13 @@ public class CamadaDeAplicacaoReceptora {
   ***************************************************************************** */
   public static void aplicacaoReceptora(String mensagem) {
     TelaPrincipal.imprimirNaTela(mensagem, TelaPrincipal.MENSAGEM_DECODIFICADA);
+
+    try {
+      PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
+
+      PainelEsquerdo.mutex.release();
+    } catch (Exception e) {
+      System.out.println("Erro ao dar acquire na aplicacao receptora!");
+    }
   }
 }
