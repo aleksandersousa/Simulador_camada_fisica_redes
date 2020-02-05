@@ -70,14 +70,12 @@ public class CamadaFisicaReceptora {
     TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
 
     int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
-    for(int i=0, j=0; i<fluxoBrutoDeBits.length; i+=2){
+    for(int i=0, j=0; i<fluxoBrutoDeBits.length; i+=2, j++){
       if(fluxoBrutoDeBits[i] == 1){
         bitsDecodificados[j] = 0;
-        j++;
       }
       else{
         bitsDecodificados[j] = 1;
-        j++;
       }
     }
 

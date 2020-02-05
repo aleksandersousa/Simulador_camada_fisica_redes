@@ -28,26 +28,26 @@ public class CamadaFisicaTransmissora {
     //imprime todo o passo a passo na tela
     switch(tipoDeCodificacao) {
       case 0: //codificao binaria
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoBinaria(quadro);
         break;
       case 1: //codificacao manchester
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchester(quadro);
         break;
       case 2: //codificacao manchester diferencial
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits =  CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
         break;
     }
 
-    MeioDeComunicacao.meioDeComunicacao(fluxoBrutoDeBits);
+    //MeioDeComunicacao.meioDeComunicacao(fluxoBrutoDeBits);
   }
 
   /* **************************************************************
@@ -74,18 +74,59 @@ public class CamadaFisicaTransmissora {
   *************************************************************** */
   private static int[] camadaFisicaTransmissoraCodificacaoManchester(int[] quadro) {
     int[] bitsBrutos = Conversao.asciiParaBits(quadro);
-    int[] bitsCodificados = new int[bitsBrutos.length*2];
 
-    for(int i=0, j=0; i<bitsBrutos.length; i++){
-      if(bitsBrutos[i] == 1){
-        bitsCodificados[j] = 0;
-        bitsCodificados[++j] = 1;
+    //calcula o tamanho do vetor bitsCodificados
+    int novoTamanho = 0;
+    if(Integer.toBinaryString(bitsBrutos[bitsBrutos.length-1]).length() <= 16){
+      novoTamanho = (bitsBrutos.length*2)-1;
+    }else{
+      novoTamanho = bitsBrutos.length*2;
+    }
+
+    int[] bitsCodificados = new int[novoTamanho];
+
+    // cria um valor inteiro com 1 no bit mais à esquerda e 0s em outros locais
+    int displayMask = 1 << 31;//10000000 00000000 00000000 00000000
+
+    //int com todos os bits 0s
+    int valor = 0;//00000000 00000000 00000000 00000000
+
+    for(int i=0, pos=0; i<bitsBrutos.length; i++){
+      //pega o numero de bits do inteiro
+      int numeroDeBits = Integer.toBinaryString(bitsBrutos[i]).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 8){
+        numeroDeBits = 8;
+      }else if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else if(numeroDeBits <= 24){
+        numeroDeBits = 24;
+      }else if(numeroDeBits <= 32){
+        numeroDeBits = 32;
       }
-      else{
-        bitsCodificados[j] = 1;
-        bitsCodificados[++j] = 0;
+
+      int numero = bitsBrutos[i];
+      numero <<= 32-numeroDeBits; //desloca para os primeiros 8 bits
+
+      for(int j=1; j<=numeroDeBits; j++){
+        if((numero & displayMask) == 0){
+          valor <<= 1;
+          valor = valor | 1;
+          valor <<= 1;
+          valor = valor | 0;
+        }else{
+          valor <<= 2;
+          valor = valor | 1;
+        }
+        numero <<= 1;
+
+        if(j == 16 || j == numeroDeBits){
+          bitsCodificados[pos] = valor;
+          valor = 0;
+          pos++;
+        }
       }
-      j++;
     }
 
     TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);
@@ -102,35 +143,83 @@ public class CamadaFisicaTransmissora {
   *************************************************************** */
   private static int[] camadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
     int[] bitsBrutos = Conversao.asciiParaBits(quadro);
-    int[] bitsCodificados = new int[bitsBrutos.length*2];
 
-    for(int i=0, j=0; i<bitsBrutos.length; i++){
-      if(i == 0){
-        if(bitsBrutos[i] == 0){
-          bitsCodificados[j] = 1;
-          bitsCodificados[++j] = 0;
+    //calcula o tamanho do vetor bitsCodificados
+    int novoTamanho = 0;
+    if(Integer.toBinaryString(bitsBrutos[bitsBrutos.length-1]).length() <= 16){
+      novoTamanho = (bitsBrutos.length*2)-1;
+    }else{
+      novoTamanho = bitsBrutos.length*2;
+    }
+
+    int[] bitsCodificados = new int[novoTamanho];
+
+    // cria um valor inteiro com 1 no bit mais à esquerda e 0s em outros locais
+    int displayMask = 1 << 31;//10000000 00000000 00000000 00000000
+
+    //int com todos os bits 0s
+    int valor = 0;//00000000 00000000 00000000 00000000
+
+    boolean sinal = false; //sinal para indentificar transicao
+
+    for(int i=0, pos=0; i<bitsBrutos.length; i++){
+      //pega o numero de bits do inteiro
+      int numeroDeBits = Integer.toBinaryString(bitsBrutos[i]).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 8){
+        numeroDeBits = 8;
+      }else if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else if(numeroDeBits <= 24){
+        numeroDeBits = 24;
+      }else if(numeroDeBits <= 32){
+        numeroDeBits = 32;
+      }
+
+      int numero = bitsBrutos[i];
+      numero <<= 32-numeroDeBits; //desloca para os primeiros 8 bits
+
+      for(int j=1; j<=numeroDeBits; j++){
+        if((numero & displayMask) == 0){
+          if(sinal){
+            valor <<= 1;
+            valor = valor | 0;
+            valor <<= 1;
+            valor = valor | 1;
+          }else{
+            valor <<= 1;
+            valor = valor | 1;
+            valor <<= 1;
+            valor = valor | 0;
+          }
+        }else{
+          sinal = !sinal; //houve transicao
+
+          if(sinal){
+            valor <<= 1;
+            valor = valor | 0;
+            valor <<= 1;
+            valor = valor | 1;
+          }else{
+            valor <<= 1;
+            valor = valor | 1;
+            valor <<= 1;
+            valor = valor | 0;
+          }
         }
-        else{
-          bitsCodificados[j] = 0;
-          bitsCodificados[++j] = 1;
+        numero <<= 1;
+
+        if(j == 16 || j == numeroDeBits){
+          bitsCodificados[pos] = valor;
+          valor = 0;
+          pos++;
         }
       }
-      else{
-        if((bitsBrutos[i] == 1 && bitsBrutos[i-1] == 0) ||
-        (bitsBrutos[i] == 1 && bitsBrutos[i-1] == 1))
-        {
-          bitsCodificados[j] = bitsCodificados[j-1];
-          bitsCodificados[++j] = 1-bitsCodificados[j-1];
-        }
-        else if(
-        (bitsBrutos[i] == 0 && bitsBrutos[i-1] == 1) ||
-        (bitsBrutos[i] == 0 && bitsBrutos[i-1] == 0))
-        {
-          bitsCodificados[j] = 1-bitsCodificados[j-1];
-          bitsCodificados[++j] = 1-bitsCodificados[j-1];
-        }
-      }
-      j++;
+    }
+
+    for(int i=0; i<bitsCodificados.length; i++){
+      System.out.println(bitsCodificados[i]);
     }
 
     TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);

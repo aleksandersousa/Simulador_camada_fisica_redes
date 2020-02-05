@@ -51,14 +51,32 @@ public class Conversao {
   Retorno: int[] bitsBrutos: vetor com os bits*
   *************************************************************** */
   public static int[] asciiParaBits(int[] quadro) {
-    int[] bitsBrutos = new int[quadro.length*8]; //cada numero sao 8 bits
 
-    for(int i=0, j=0; i<quadro.length; i++){
-      Conversao.converter(quadro[i], bitsBrutos, j);
-      j+=8;
+    //calcula o tamanho do vetor fluxoBrutoDeBits
+    int novoTamanho = 0;
+    if(quadro.length%4 == 0){
+      novoTamanho = quadro.length/4;
+    }else{
+      novoTamanho = (quadro.length/4)+1;
     }
 
-    return Conversao.inverter(bitsBrutos);
+    int[] fluxoBrutoDeBits = new int[novoTamanho];
+    int valor = 0; //valor com capacidade para armazenar ate 4 numeros
+
+    for(int i=0, pos=0; i<quadro.length; i++){
+      valor <<= 8; //desloca 8 bits para esquerda
+      valor = valor | quadro[i]; //recebe em binario o valor de quadro[i]
+
+      if(i%4 >= 0 && i == quadro.length-1){ //caso o vetor tenha menos de 4 numeros
+        fluxoBrutoDeBits[pos] = valor;
+      }else if(i%4 == 3){ //a cada 4 iteracoes
+        fluxoBrutoDeBits[pos] = valor;
+        valor=0; //reseta a variavel
+        pos++;
+      }
+    }
+
+    return fluxoBrutoDeBits;
   }
 
   /* ***************************************************************
@@ -134,23 +152,6 @@ public class Conversao {
     }
 
     return strAscii.toString();
-  }
-
-  /* ***************************************************************
-  Metodo: converter*
-  Funcao: converte um numero inteiro em binario*
-  Parametros: int numero: numero a ser convertido
-              int[] bitsBrutos: array com os numeros da tabela ascii
-              int index: index para percorrer o array*
-  Retorno: void*
-  *************************************************************** */
-  private static void converter(int numero, int[] bitsBrutos, int index) {
-    if(numero > 0){
-      bitsBrutos[index] = numero%2;
-      index++;
-
-      Conversao.converter(numero >> 1, bitsBrutos, index);
-    }
   }
 
   /* ***************************************************************
