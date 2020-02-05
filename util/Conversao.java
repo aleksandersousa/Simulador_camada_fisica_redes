@@ -19,7 +19,7 @@ public class Conversao {
   public static int[] bitsParaAscii(int[] fluxoBrutoDeBits) {
     int novoTamanho = 0;
     int numeroDeBits =
-    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
+    Integer.SIZE-Integer.numberOfLeadingZeros(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]);
 
     //calculando novo tamanho do vetor quadro
     if(numeroDeBits<=8){
@@ -38,7 +38,7 @@ public class Conversao {
 
     for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
       int numero = fluxoBrutoDeBits[i];
-      numeroDeBits = Integer.toBinaryString(numero).length();
+      numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
       if(numeroDeBits <= 8){
@@ -138,7 +138,7 @@ public class Conversao {
 
     for(int i=0; i<bits.length; i++){
       int numero = bits[i];
-      int numeroDeBits = Integer.toBinaryString(numero).length();
+      int numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
       if(numeroDeBits <= 8){

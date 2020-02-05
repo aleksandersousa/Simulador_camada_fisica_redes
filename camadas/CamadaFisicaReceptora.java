@@ -66,7 +66,7 @@ public class CamadaFisicaReceptora {
     TelaPrincipal.imprimirNaTela(
       Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
 
-      TelaPrincipal.imprimirNaTela(
+    TelaPrincipal.imprimirNaTela(
       Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
 
     return Conversao.bitsParaAscii(fluxoBrutoDeBits);
@@ -84,7 +84,7 @@ public class CamadaFisicaReceptora {
 
     int novoTamanho = 0;
     int numeroDeBits =
-    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
+    Integer.SIZE-Integer.numberOfLeadingZeros(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]);
 
     //calcula novo tamanho do vetor quadro
     if(numeroDeBits <= 16){
@@ -99,7 +99,7 @@ public class CamadaFisicaReceptora {
 
     for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
       int numero = fluxoBrutoDeBits[i];
-      numeroDeBits = Integer.toBinaryString(numero).length();
+      numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
       if(numeroDeBits <= 16){
@@ -146,7 +146,7 @@ public class CamadaFisicaReceptora {
 
     int novoTamanho = 0;
     int numeroDeBits =
-    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
+    Integer.SIZE-Integer.numberOfLeadingZeros(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]);
 
     //calcula novo tamanho do vetor quadro
     if(numeroDeBits <= 16){
@@ -162,7 +162,7 @@ public class CamadaFisicaReceptora {
 
     for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
       int numero = fluxoBrutoDeBits[i];
-      numeroDeBits = Integer.toBinaryString(numero).length();
+      numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
       if(numeroDeBits <= 16){
