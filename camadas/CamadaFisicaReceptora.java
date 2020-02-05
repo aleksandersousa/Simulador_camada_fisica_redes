@@ -28,19 +28,28 @@ public class CamadaFisicaReceptora {
     //imprime todo o passo a passo na tela
     switch(tipoDeDecodificacao) {
       case 0: //decodificacao Binaria
-        fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoBinaria(fluxoBrutoDeBitsPontoB);
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
-        //PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
+        fluxoBrutoDeBits =
+        CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoBinaria(fluxoBrutoDeBitsPontoB);
+
+        TelaPrincipal.imprimirNaTela(
+          Conversao.asciiParaString(
+            fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
       case 1: //decodificacoa Manchester
-        fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchester(fluxoBrutoDeBitsPontoB);
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
-        //PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
+        fluxoBrutoDeBits =
+        CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchester(fluxoBrutoDeBitsPontoB);
+
+        TelaPrincipal.imprimirNaTela(
+          Conversao.asciiParaString(
+            fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
       case 2: //decodificacao Manchester Diferencial
-        fluxoBrutoDeBits = CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchesterDiferencial(fluxoBrutoDeBitsPontoB);
-        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
-        //PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //ativa novamente a combobox
+        fluxoBrutoDeBits =
+        CamadaFisicaReceptora.camadaFisicaReceptoraDecodificacaoManchesterDiferencial(fluxoBrutoDeBitsPontoB);
+
+        TelaPrincipal.imprimirNaTela(
+          Conversao.asciiParaString(
+            fluxoBrutoDeBits, TelaPrincipal.ASCII_DECODIFICADO), TelaPrincipal.ASCII_DECODIFICADO);
         break;
     }
 
@@ -54,8 +63,11 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoBinaria(int[] fluxoBrutoDeBits) {
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
+    TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
+
+      TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_DECODIFICADO);
 
     return Conversao.bitsParaAscii(fluxoBrutoDeBits);
   }
@@ -67,21 +79,59 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoManchester(int[] fluxoBrutoDeBits) {
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
+    TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
 
-    int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
-    for(int i=0, j=0; i<fluxoBrutoDeBits.length; i+=2, j++){
-      if(fluxoBrutoDeBits[i] == 1){
-        bitsDecodificados[j] = 0;
+    int novoTamanho = 0;
+    int numeroDeBits =
+    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
+
+    //calcula novo tamanho do vetor quadro
+    if(numeroDeBits <= 16){
+      novoTamanho = (fluxoBrutoDeBits.length*2)-1;
+    }else{
+      novoTamanho = fluxoBrutoDeBits.length*2;
+    }
+
+    int[] bitsDecodificados = new int[novoTamanho];
+    int displayMask = 1 << 31;
+    int valor = 0;
+
+    for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
+      int numero = fluxoBrutoDeBits[i];
+      numeroDeBits = Integer.toBinaryString(numero).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else{
+        numeroDeBits = 32;
       }
-      else{
-        bitsDecodificados[j] = 1;
+
+      numero <<= 32-numeroDeBits; //posiciona os bits mais a esquerda
+
+      for(int j=1; j<=numeroDeBits/2; j++){
+        if((numero & displayMask) == 0){ //representa o bit 1
+          valor <<= 1;
+          valor = valor | 1;
+        }else{ //representa o bit 0
+          valor <<= 1;
+          valor = valor | 0;
+        }
+        numero <<= 2;
+
+        if(j%8 == 0){ //a cada 8 bits
+          bitsDecodificados[pos] = valor;
+          valor = 0; //reseta o inteiro
+          pos++;
+        }
       }
     }
 
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
+    TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
 
-    return Conversao.bitsParaAscii(bitsDecodificados);
+    return bitsDecodificados;
   }
 
   /* **************************************************************
@@ -91,50 +141,75 @@ public class CamadaFisicaReceptora {
   Retorno: int[] bitsDecodificados*
   *************************************************************** */
   private static int[] camadaFisicaReceptoraDecodificacaoManchesterDiferencial(int[] fluxoBrutoDeBits) {
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
+    TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(fluxoBrutoDeBits), TelaPrincipal.BIT_RECEBIDO);
 
-    int[] bitsDecodificados = new int[fluxoBrutoDeBits.length/2];
-    int cont = 0; //numero de vezes que o bit 1 repete
-    int cont2 = 0; //numero de vezes que o bit 0 repete
+    int novoTamanho = 0;
+    int numeroDeBits =
+    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
 
-    for(int i=0, j=1; i<fluxoBrutoDeBits.length; i+=2){
-      if(i == 0){
-        if(fluxoBrutoDeBits[0] == 1 && fluxoBrutoDeBits[1] == 0){
-          bitsDecodificados[0] = 0;
-          cont2++;
+    //calcula novo tamanho do vetor quadro
+    if(numeroDeBits <= 16){
+      novoTamanho = (fluxoBrutoDeBits.length*2)-1;
+    }else{
+      novoTamanho = fluxoBrutoDeBits.length*2;
+    }
+
+    int[] bitsDecodificados = new int[novoTamanho];
+    int displayMask = 1 << 31;
+    int valor = 0;
+    boolean transicao = false;
+
+    for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
+      int numero = fluxoBrutoDeBits[i];
+      numeroDeBits = Integer.toBinaryString(numero).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else{
+        numeroDeBits = 32;
+      }
+
+      numero <<= 32-numeroDeBits; //posiciona os bits mais a esquerda
+
+      for(int j=1; j<=numeroDeBits/2; j++){
+        if((numero & displayMask) == 0){
+          transicao = !transicao; //houve transicao
+
+          if(transicao){
+            valor <<= 1;
+            valor = valor | 1;
+          }else{
+            valor <<= 1;
+            valor = valor | 0;
+
+            transicao = !transicao; //reseta a transicao
+          }
+        }else{
+          if(transicao){
+            valor <<= 1;
+            valor = valor | 1;
+
+            transicao = !transicao;  //reseta a transicao
+          }else{
+            valor <<= 1;
+            valor = valor | 0;
+          }
         }
-        else{
-          bitsDecodificados[0] = 1;
+        numero <<= 2;
+
+        if(j%8 == 0){ //a cada 8 bits
+          bitsDecodificados[pos] = valor;
+          valor = 0; //reseta o inteiro
+          pos++;
         }
-      }else if(fluxoBrutoDeBits[i] == fluxoBrutoDeBits[i-1] && cont == 0){
-        bitsDecodificados[j] = 1-bitsDecodificados[j-1];
-        cont++;
-        cont2 = 0;
-        j++;
-      }
-      else if(fluxoBrutoDeBits[i] == fluxoBrutoDeBits[i-1] && cont != 0){
-        bitsDecodificados[j] = bitsDecodificados[j-1];
-        cont++;
-        cont2 = 0;
-        j++;
-      }
-      else if(fluxoBrutoDeBits[i] != fluxoBrutoDeBits[i-1] && cont2 == 0)
-      {
-        bitsDecodificados[j] = 1-bitsDecodificados[j-1];
-        cont = 0;
-        cont2++;
-        j++;
-      }
-      else if(fluxoBrutoDeBits[i] != fluxoBrutoDeBits[i-1] && cont2 != 0){
-        bitsDecodificados[j] = bitsDecodificados[j-1];
-        cont = 0;
-        cont2++;
-        j++;
       }
     }
 
-    TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
+    TelaPrincipal.imprimirNaTela(
+      Conversao.bitsParaString(bitsDecodificados), TelaPrincipal.BIT_DECODIFICADO);
 
-    return Conversao.bitsParaAscii(bitsDecodificados);
+    return bitsDecodificados;
   }
 }

@@ -28,26 +28,26 @@ public class CamadaFisicaTransmissora {
     //imprime todo o passo a passo na tela
     switch(tipoDeCodificacao) {
       case 0: //codificao binaria
-        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoBinaria(quadro);
         break;
       case 1: //codificacao manchester
-        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits = CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchester(quadro);
         break;
       case 2: //codificacao manchester diferencial
-        //TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
-        //TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
+        TelaPrincipal.imprimirNaTela(Conversao.asciiParaString(quadro, TelaPrincipal.ASCII), TelaPrincipal.ASCII);
+        TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(Conversao.asciiParaBits(quadro)), TelaPrincipal.BIT_BRUTO);
 
         fluxoBrutoDeBits =  CamadaFisicaTransmissora.camadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
         break;
     }
 
-    //MeioDeComunicacao.meioDeComunicacao(fluxoBrutoDeBits);
+    MeioDeComunicacao.meioDeComunicacao(fluxoBrutoDeBits);
   }
 
   /* **************************************************************
@@ -160,7 +160,7 @@ public class CamadaFisicaTransmissora {
     //int com todos os bits 0s
     int valor = 0;//00000000 00000000 00000000 00000000
 
-    boolean sinal = false; //sinal para indentificar transicao
+    boolean transicao = false; //indentifica transicao
 
     for(int i=0, pos=0; i<bitsBrutos.length; i++){
       //pega o numero de bits do inteiro
@@ -182,7 +182,7 @@ public class CamadaFisicaTransmissora {
 
       for(int j=1; j<=numeroDeBits; j++){
         if((numero & displayMask) == 0){
-          if(sinal){
+          if(transicao){
             valor <<= 1;
             valor = valor | 0;
             valor <<= 1;
@@ -194,9 +194,9 @@ public class CamadaFisicaTransmissora {
             valor = valor | 0;
           }
         }else{
-          sinal = !sinal; //houve transicao
+          transicao = !transicao; //houve transicao
 
-          if(sinal){
+          if(transicao){
             valor <<= 1;
             valor = valor | 0;
             valor <<= 1;
@@ -216,10 +216,6 @@ public class CamadaFisicaTransmissora {
           pos++;
         }
       }
-    }
-
-    for(int i=0; i<bitsCodificados.length; i++){
-      System.out.println(bitsCodificados[i]);
     }
 
     TelaPrincipal.imprimirNaTela(Conversao.bitsParaString(bitsCodificados), TelaPrincipal.BIT_CODIFICADO);

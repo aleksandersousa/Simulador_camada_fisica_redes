@@ -103,9 +103,9 @@ public class Canvas extends JPanel {
     }
 
     if(fluxoDeBits.get(fluxoDeBits.size()-1) == 0){
-      tempLinhas.add(linhas.get(0)); //linha bit0
+      tempLinhas.add(linhas.get(1)); //linha bit0_2
     }else{
-      tempLinhas.add(linhas.get(2)); //linha bit1
+      tempLinhas.add(linhas.get(3)); //linha bit1_2
     }
 
     tempLinhas.add(null); //imagem nula para identificar final do array

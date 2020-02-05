@@ -17,27 +17,57 @@ public class Conversao {
   Retorno: int[] quadro: vetor com os numeros ASCII*
   *************************************************************** */
   public static int[] bitsParaAscii(int[] fluxoBrutoDeBits) {
-    int tamanho = 0;
+    int novoTamanho = 0;
+    int numeroDeBits =
+    Integer.toBinaryString(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]).length();
 
-    //pegando tamanho do array de quadros
-    for(int i=0; i<fluxoBrutoDeBits.length; i++){
-      if(i%8 == 7){
-        tamanho++;
-      }
+    //calculando novo tamanho do vetor quadro
+    if(numeroDeBits<=8){
+      novoTamanho = (fluxoBrutoDeBits.length*4)-3;
+    }else if(numeroDeBits<=16){
+      novoTamanho = (fluxoBrutoDeBits.length*4)-2;
+    }else if(numeroDeBits<=24){
+      novoTamanho = (fluxoBrutoDeBits.length*4)-1;
+    }else if(numeroDeBits<=32){
+      novoTamanho = fluxoBrutoDeBits.length*4;
     }
 
-    int[] quadro = new int[tamanho];
-    int[] temp = Conversao.inverter(fluxoBrutoDeBits); //reverte o array
-    int decimal = 0;
-    for(int i=0, j=0, k=0; i<fluxoBrutoDeBits.length; i++){ //transforma em decimal
-      decimal += temp[i]*Math.pow(2, j);
-      j++;
+    int[] quadro = new int[novoTamanho];
+    int displayMask = 1 << 31;
+    int valor = 0;
 
-      if(i%8 == 7){
-        quadro[k] = decimal;
-        decimal = 0;
-        j = 0;
-        k++;
+    for(int i=0, pos=0; i<fluxoBrutoDeBits.length; i++){
+      int numero = fluxoBrutoDeBits[i];
+      numeroDeBits = Integer.toBinaryString(numero).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 8){
+        numeroDeBits = 8;
+      }else if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else if(numeroDeBits <= 24){
+        numeroDeBits = 24;
+      }else if(numeroDeBits <= 32){
+        numeroDeBits = 32;
+      }
+
+      numero <<= 32-numeroDeBits; //desloca para os primeiros 8 bits
+
+      for(int j=1; j<=numeroDeBits; j++){
+        if((numero & displayMask) == 0){
+          valor <<= 1;
+          valor = valor | 0;
+        }else{
+          valor <<= 1;
+          valor = valor | 1;
+        }
+        numero <<= 1;
+
+        if(j%8 == 0){ //um caractere
+          quadro[pos] = valor;
+          valor = 0;
+          pos++;
+        }
       }
     }
 
@@ -61,7 +91,7 @@ public class Conversao {
     }
 
     int[] fluxoBrutoDeBits = new int[novoTamanho];
-    int valor = 0; //valor com capacidade para armazenar ate 4 numeros
+    int valor = 0; //valor com capacidade para armazenar ate 4 caracteres
 
     for(int i=0, pos=0; i<quadro.length; i++){
       valor <<= 8; //desloca 8 bits para esquerda
@@ -103,15 +133,33 @@ public class Conversao {
   *************************************************************** */
   public static String bitsParaString(int[] bits) {
     StringBuilder strBits = new StringBuilder();
-    strBits.append(bits[0]);
 
-    for(int i=1; i<bits.length; i++){
-      if(i % 8 == 0){
-        strBits.append(" ");
-        strBits.append(bits[i]);
+    int displayMask = 1 << 31;
+
+    for(int i=0; i<bits.length; i++){
+      int numero = bits[i];
+      int numeroDeBits = Integer.toBinaryString(numero).length();
+
+      //arredondando o numero de bits
+      if(numeroDeBits <= 8){
+        numeroDeBits = 8;
+      }else if(numeroDeBits <= 16){
+        numeroDeBits = 16;
+      }else if(numeroDeBits <= 24){
+        numeroDeBits = 24;
+      }else if(numeroDeBits <= 32){
+        numeroDeBits = 32;
       }
-      else{
-        strBits.append(bits[i]);
+
+      numero <<= 32-numeroDeBits; //desloca para os primeiros 8 bits
+
+      for(int j=1; j<=numeroDeBits; j++){
+        strBits.append((numero & displayMask) == 0 ? 0 : 1);
+        numero <<= 1;
+
+        if(j%8 == 0){
+          strBits.append(" ");
+        }
       }
     }
 
@@ -152,21 +200,5 @@ public class Conversao {
     }
 
     return strAscii.toString();
-  }
-
-  /* ***************************************************************
-  Metodo: inverter*
-  Funcao: inverte o elementos de um array*
-  Parametros: int[] bits: vetor com os bits*
-  Retorno: int[] temp: vetor com os elementos invertidos*
-  *************************************************************** */
-  private static int[] inverter(int[] bits) {
-    int[] temp = new int[bits.length];
-    for(int i=bits.length-1, j=0; i>=0; i--){
-      temp[j] = bits[i];
-      j++;
-    }
-
-    return temp;
   }
 }
