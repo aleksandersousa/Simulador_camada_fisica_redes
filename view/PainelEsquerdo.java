@@ -185,33 +185,29 @@ public class PainelEsquerdo extends JPanel {
             new Thread(new Runnable(){
               @Override
               public void run() {
-                try {
-                  if(PainelEsquerdo.mutex.tryAcquire()){ //trava o combobox
-                    PainelEsquerdo.cmbListaDeCodificacao.setEnabled(false); //desativa combobox
+                if(PainelEsquerdo.mutex.tryAcquire()){ //trava o combobox
+                  PainelEsquerdo.cmbListaDeCodificacao.setEnabled(false); //desativa combobox
 
-                    PainelEsquerdo.cmbListaDeCodificacao.update(
-                      PainelEsquerdo.cmbListaDeCodificacao.getGraphics());
+                  PainelEsquerdo.cmbListaDeCodificacao.update(
+                    PainelEsquerdo.cmbListaDeCodificacao.getGraphics());
 
-                    if(txtMensagem.getText().equals("")){
-                      JOptionPane.showMessageDialog(
-                        null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
-
-                      PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
-
-                      PainelEsquerdo.mutex.release(); //libera o combobox
-                    }else{
-                      CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
-                      repaint();
-                    }
-                  }else{
+                  if(txtMensagem.getText().equals("")){
                     JOptionPane.showMessageDialog(
-                      null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+                      null, "Caixa de texto vazia!", "Alerta!", JOptionPane.ERROR_MESSAGE);
 
-                    //elimina os threads da fila de espera
-                    PainelEsquerdo.mutex.callReducePermits(PainelEsquerdo.mutex.getQueueLength());
+                    PainelEsquerdo.cmbListaDeCodificacao.setEnabled(true); //re ativa o combobox
+
+                    PainelEsquerdo.mutex.release(); //libera o combobox
+                  }else{
+                    CamadaDeAplicacaoTransmissora.camadaDeAplicacaoTransmissora(txtMensagem.getText());
+                    repaint();
                   }
-                } catch (Exception ex) {
-                  System.out.println("Erro ao travar no painel esquerdo!");
+                }else{
+                  JOptionPane.showMessageDialog(
+                    null, "Mensagem em andamento!", "Alerta!", JOptionPane.ERROR_MESSAGE);
+
+                  //elimina os threads da fila de espera
+                  PainelEsquerdo.mutex.callReducePermits(PainelEsquerdo.mutex.getQueueLength());
                 }
               }
             }).start();

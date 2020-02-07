@@ -139,6 +139,7 @@ public class CamadaFisicaTransmissora {
           bitsCodificados[pos] = valor;
           valor = 0;
           pos++;
+          break; //sai do laco
         }
       }
     }
@@ -229,6 +230,7 @@ public class CamadaFisicaTransmissora {
           bitsCodificados[pos] = valor;
           valor = 0;
           pos++;
+          break; //sai do laco
         }
       }
     }
