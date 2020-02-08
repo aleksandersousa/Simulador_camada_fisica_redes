@@ -90,7 +90,7 @@ public class CamadaFisicaTransmissora {
 
     //calcula o tamanho do vetor bitsCodificados
     int novoTamanho = 0;
-    if(Integer.SIZE-Integer.numberOfLeadingZeros(bitsBrutos.length-1) <= 16){
+    if(Integer.SIZE-Integer.numberOfLeadingZeros(bitsBrutos[bitsBrutos.length-1]) <= 16){
       novoTamanho = (bitsBrutos.length*2)-1;
     }else{
       novoTamanho = bitsBrutos.length*2;
@@ -105,9 +105,9 @@ public class CamadaFisicaTransmissora {
     int valor = 0;//00000000 00000000 00000000 00000000
 
     for(int i=0, pos=0; i<bitsBrutos.length; i++){
-      //pega o numero de bits do inteiro
       int numero = bitsBrutos[i];
 
+      //pega o numero de bits do inteiro
       int numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
@@ -135,11 +135,14 @@ public class CamadaFisicaTransmissora {
         }
         numero <<= 1;
 
-        if(j == 16 || j == numeroDeBits){
+        if(j == 16){
           bitsCodificados[pos] = valor;
           valor = 0;
           pos++;
-          break; //sai do laco
+        }else if(j == numeroDeBits){
+          bitsCodificados[pos] = valor;
+          valor = 0;
+          pos++;
         }
       }
     }
@@ -161,7 +164,7 @@ public class CamadaFisicaTransmissora {
 
     //calcula o tamanho do vetor bitsCodificados
     int novoTamanho = 0;
-    if(Integer.SIZE-Integer.numberOfLeadingZeros(bitsBrutos.length-1) <= 16){
+    if(Integer.SIZE-Integer.numberOfLeadingZeros(bitsBrutos[bitsBrutos.length-1]) <= 16){
       novoTamanho = (bitsBrutos.length*2)-1;
     }else{
       novoTamanho = bitsBrutos.length*2;
@@ -226,11 +229,14 @@ public class CamadaFisicaTransmissora {
         }
         numero <<= 1;
 
-        if(j == 16 || j == numeroDeBits){
+        if(j == 16){
           bitsCodificados[pos] = valor;
           valor = 0;
           pos++;
-          break; //sai do laco
+        }else if(j == numeroDeBits){
+          bitsCodificados[pos] = valor;
+          valor = 0;
+          pos++;
         }
       }
     }
