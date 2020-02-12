@@ -191,7 +191,7 @@ public class CamadaFisicaReceptora {
             valor <<= 1;
             valor = valor | 1;
 
-            transicao = !transicao;  //reseta a transicao
+            transicao = !transicao; //reseta a transicao
           }else{
             valor <<= 1;
             valor = valor | 0;
