@@ -126,12 +126,14 @@ public class CamadaFisicaTransmissora {
       for(int j=1; j<=numeroDeBits; j++){
         if((numero & displayMask) == 0){
           valor <<= 1;
+          valor = valor | 0;
+          valor <<= 1;
+          valor = valor | 1;
+        }else{
+          valor <<= 1;
           valor = valor | 1;
           valor <<= 1;
           valor = valor | 0;
-        }else{
-          valor <<= 2;
-          valor = valor | 1;
         }
         numero <<= 1;
 
@@ -181,9 +183,7 @@ public class CamadaFisicaTransmissora {
     boolean transicao = false; //indentifica transicao
 
     for(int i=0, pos=0; i<bitsBrutos.length; i++){
-      //pega o numero de bits do inteiro
       int numero = bitsBrutos[i];
-
       int numeroDeBits = Integer.SIZE-Integer.numberOfLeadingZeros(numero);
 
       //arredondando o numero de bits
@@ -203,28 +203,28 @@ public class CamadaFisicaTransmissora {
         if((numero & displayMask) == 0){
           if(transicao){
             valor <<= 1;
-            valor = valor | 0;
-            valor <<= 1;
             valor = valor | 1;
+            valor <<= 1;
+            valor = valor | 0;
           }else{
             valor <<= 1;
-            valor = valor | 1;
-            valor <<= 1;
             valor = valor | 0;
+            valor <<= 1;
+            valor = valor | 1;
           }
         }else{
           transicao = !transicao; //houve transicao
 
           if(transicao){
             valor <<= 1;
-            valor = valor | 0;
-            valor <<= 1;
             valor = valor | 1;
+            valor <<= 1;
+            valor = valor | 0;
           }else{
             valor <<= 1;
-            valor = valor | 1;
-            valor <<= 1;
             valor = valor | 0;
+            valor <<= 1;
+            valor = valor | 1;
           }
         }
         numero <<= 1;

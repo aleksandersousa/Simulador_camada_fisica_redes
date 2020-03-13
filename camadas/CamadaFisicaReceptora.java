@@ -111,12 +111,12 @@ public class CamadaFisicaReceptora {
       numero <<= 32-numeroDeBits; //posiciona os bits mais a esquerda
 
       for(int j=1; j<=numeroDeBits/2; j++){
-        if((numero & displayMask) == 0){ //representa o bit 1
-          valor <<= 1;
-          valor = valor | 1;
-        }else{ //representa o bit 0
+        if((numero & displayMask) == 0){ //representa o bit 0
           valor <<= 1;
           valor = valor | 0;
+        }else{ //representa o bit 1
+          valor <<= 1;
+          valor = valor | 1;
         }
         numero <<= 2;
 
@@ -148,7 +148,7 @@ public class CamadaFisicaReceptora {
     int numeroDeBits =
     Integer.SIZE-Integer.numberOfLeadingZeros(fluxoBrutoDeBits[fluxoBrutoDeBits.length-1]);
 
-    //calcula novo tamanho do vetor quadro
+    //calcula novo tamanho do vetor fluxoBrutoDeBits
     if(numeroDeBits <= 16){
       novoTamanho = (fluxoBrutoDeBits.length*2)-1;
     }else{
@@ -175,6 +175,16 @@ public class CamadaFisicaReceptora {
 
       for(int j=1; j<=numeroDeBits/2; j++){
         if((numero & displayMask) == 0){
+          if(transicao){
+            valor <<= 1;
+            valor = valor | 1;
+
+            transicao = !transicao; //reseta a transicao
+          }else{
+            valor <<= 1;
+            valor = valor | 0;
+          }
+        }else{
           transicao = !transicao; //houve transicao
 
           if(transicao){
@@ -185,16 +195,6 @@ public class CamadaFisicaReceptora {
             valor = valor | 0;
 
             transicao = !transicao; //reseta a transicao
-          }
-        }else{
-          if(transicao){
-            valor <<= 1;
-            valor = valor | 1;
-
-            transicao = !transicao; //reseta a transicao
-          }else{
-            valor <<= 1;
-            valor = valor | 0;
           }
         }
         numero <<= 2;
